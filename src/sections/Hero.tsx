@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import heroDeck from '../assets/hero-deck.webp'
 import QuoteForm from '../components/QuoteForm'
-import { PhoneIcon, CheckIcon } from '../components/icons'
+import { PhoneIcon, CheckIcon, PlayIcon } from '../components/icons'
 import { SITE } from '../lib/site'
 
 /** Rotating service tags — from the old site's hero */
@@ -17,17 +17,39 @@ const TRUST_ITEMS = [
 
 export default function Hero() {
   const [tagIndex, setTagIndex] = useState(0)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  // iOS blocks autoplay in Low Power Mode etc. — poster stays, tap starts playback
+  const [needsTap, setNeedsTap] = useState(false)
 
   useEffect(() => {
     const t = setInterval(() => setTagIndex((i) => (i + 1) % TAGS.length), 4000)
     return () => clearInterval(t)
   }, [])
 
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    video.play().catch(() => setNeedsTap(true))
+    const onPlaying = () => setNeedsTap(false)
+    video.addEventListener('playing', onPlaying)
+    return () => video.removeEventListener('playing', onPlaying)
+  }, [])
+
+  const startVideo = () => {
+    if (needsTap) videoRef.current?.play().catch(() => {})
+  }
+
   return (
-    <section className="relative flex min-h-svh flex-col justify-end overflow-hidden bg-ink-950">
+    <section
+      onClick={startVideo}
+      onTouchStart={startVideo}
+      className="relative flex min-h-svh flex-col justify-end overflow-hidden bg-ink-950"
+    >
       {/* Background video + warm dark gradient (poster image covers load time & reduced-motion) */}
       <div className="absolute inset-0" aria-hidden="true">
         <video
+          ref={videoRef}
           src="/hero-video.mp4"
           poster={heroDeck}
           autoPlay
@@ -45,6 +67,19 @@ export default function Hero() {
         <div className="absolute inset-0 bg-gradient-to-r from-ink-950/95 via-ink-950/75 to-ink-950/40" />
         <div className="absolute inset-0 bg-gradient-to-t from-ink-950/90 via-transparent to-ink-950/30" />
       </div>
+
+      {/* Play badge — only when autoplay was blocked (e.g. iOS Low Power Mode) */}
+      {needsTap && (
+        <button
+          type="button"
+          onClick={startVideo}
+          aria-label="Play background video"
+          className="absolute right-4 bottom-20 z-10 flex items-center gap-2 rounded-full bg-brand-500 py-2.5 pr-5 pl-4 font-bold text-ink-950 shadow-xl transition-colors active:bg-brand-600 sm:right-6"
+        >
+          <PlayIcon className="size-4" />
+          Play
+        </button>
+      )}
 
       {/* Content */}
       <div className="relative mx-auto grid w-full max-w-7xl flex-1 items-center gap-12 px-4 pt-28 pb-12 sm:px-6 lg:grid-cols-[1fr_400px] lg:pt-32">
