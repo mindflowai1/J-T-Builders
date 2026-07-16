@@ -42,10 +42,12 @@ export default function BuildStory() {
     const update = () => {
       raf = 0
       const rect = el.getBoundingClientRect()
-      // Pinned scrub: the sticky scene locks on screen while the section's
-      // extra height (section - viewport) is scrolled through.
-      const total = rect.height - window.innerHeight
-      setP(total > 0 ? Math.min(1, Math.max(0, -rect.top / total)) : 1)
+      const vh = window.innerHeight
+      // Pinned scrub over the sticky band: pins at top-[20svh] (p=0) and
+      // unpins when the section bottom meets the band bottom at 75svh (p=1).
+      const start = vh * 0.2
+      const total = rect.height - vh * 0.55
+      setP(Math.min(1, Math.max(0, (start - rect.top) / total)))
     }
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update)
@@ -75,13 +77,14 @@ export default function BuildStory() {
   const flash = Math.max(flash1, flash2)
 
   return (
-    <section ref={ref} className="relative h-[160vh] bg-ink-900">
-      <div className="sticky top-0 flex h-svh flex-col items-center justify-center overflow-hidden px-4">
+    <section ref={ref} className="relative h-[100vh] bg-cream-50">
+      {/* Half-height dark "stage" pinned mid-screen while the build scrubs */}
+      <div className="sticky top-[20svh] mx-auto flex h-[55svh] w-[min(72rem,calc(100%-2rem))] flex-col items-center justify-center overflow-hidden rounded-3xl bg-ink-900 px-4">
         {/* Scene */}
         <svg
           viewBox="0 0 420 320"
           aria-hidden="true"
-          className="w-full max-w-lg"
+          className="w-full max-w-[min(24rem,60svh)]"
         >
           {/* Blueprint outline (dashed, draws itself, then fades) */}
           <path
@@ -262,13 +265,13 @@ export default function BuildStory() {
         </svg>
 
         {/* Tagline phases — light up as the build progresses */}
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 sm:gap-x-10">
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 sm:gap-x-8">
           {PHASES.map((phase) => {
             const reached = p >= phase.at
             return (
               <span
                 key={phase.label}
-                className={`font-display text-2xl font-bold uppercase transition-all duration-500 sm:text-4xl ${
+                className={`font-display text-xl font-bold uppercase transition-all duration-500 sm:text-3xl ${
                   reached ? 'scale-100 text-brand-500' : 'scale-95 text-cream-50/20'
                 }`}
               >
