@@ -5,7 +5,8 @@ import { PhoneIcon } from './icons'
 export default function Footer() {
   return (
     <footer className="bg-ink-950 text-cream-50/70">
-      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
+      {/* Extra bottom padding on mobile clears the floating action bar */}
+      <div className="mx-auto max-w-7xl px-4 pt-14 pb-32 sm:px-6 md:pb-14">
         <div className="grid gap-10 md:grid-cols-3">
           {/* Brand */}
           <div className="space-y-4">
