@@ -8,16 +8,40 @@ const SERVICES = [
   'Other',
 ] as const
 
-const inputCls =
-  'w-full rounded-lg border border-ink-500/25 bg-white px-4 py-3 text-base text-ink-950 placeholder:text-ink-500/70 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/40'
+const STYLES = {
+  light: {
+    input:
+      'w-full rounded-lg border border-ink-500/25 bg-white px-4 py-3 text-base text-ink-950 placeholder:text-ink-500/70 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/40',
+    select: 'text-ink-950 invalid:text-ink-500/70',
+    hint: 'text-ink-500',
+    successTitle: 'text-ink-950',
+    successHint: 'text-ink-500',
+  },
+  glass: {
+    input:
+      'w-full rounded-lg border border-cream-50/25 bg-cream-50/10 px-4 py-3 text-base text-cream-50 placeholder:text-cream-50/60 backdrop-blur-md focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/40',
+    select: 'text-cream-50 invalid:text-cream-50/60 [&>option]:text-ink-950',
+    hint: 'text-cream-50/70',
+    successTitle: 'text-cream-50',
+    successHint: 'text-cream-50/70',
+  },
+} as const
 
 /**
- * Lead-capture form, reused in the hero and in the contact section.
+ * Lead-capture form, reused in the hero (glass, over the video) and the
+ * contact section (light, on a white card).
  * TODO: wire submission to a real destination (email service / backend) — currently
  * it only shows the success state locally. See docs/design-plan.md open items.
  */
-export default function QuoteForm({ id }: { id?: string }) {
+export default function QuoteForm({
+  id,
+  variant = 'light',
+}: {
+  id?: string
+  variant?: 'light' | 'glass'
+}) {
   const [submitted, setSubmitted] = useState(false)
+  const s = STYLES[variant]
 
   if (submitted) {
     return (
@@ -25,10 +49,10 @@ export default function QuoteForm({ id }: { id?: string }) {
         <span className="flex size-12 items-center justify-center rounded-full bg-brand-500 text-ink-950">
           <CheckIcon className="size-6" />
         </span>
-        <p className="font-display text-xl font-bold text-ink-950 uppercase">
+        <p className={`font-display text-xl font-bold uppercase ${s.successTitle}`}>
           Request received!
         </p>
-        <p className="text-sm text-ink-500">
+        <p className={`text-sm ${s.successHint}`}>
           We'll get back to you within 24 hours with your free estimate.
         </p>
       </div>
@@ -54,7 +78,7 @@ export default function QuoteForm({ id }: { id?: string }) {
           required
           autoComplete="name"
           placeholder="Your name"
-          className={inputCls}
+          className={s.input}
         />
       </div>
       <div>
@@ -68,7 +92,7 @@ export default function QuoteForm({ id }: { id?: string }) {
           required
           autoComplete="tel"
           placeholder="Phone number"
-          className={inputCls}
+          className={s.input}
         />
       </div>
       <div>
@@ -80,14 +104,14 @@ export default function QuoteForm({ id }: { id?: string }) {
           name="service"
           required
           defaultValue=""
-          className={`${inputCls} text-ink-950 invalid:text-ink-500/70`}
+          className={`${s.input} ${s.select}`}
         >
           <option value="" disabled>
             What do you need?
           </option>
-          {SERVICES.map((s) => (
-            <option key={s} value={s}>
-              {s}
+          {SERVICES.map((service) => (
+            <option key={service} value={service}>
+              {service}
             </option>
           ))}
         </select>
@@ -101,7 +125,7 @@ export default function QuoteForm({ id }: { id?: string }) {
           name="message"
           rows={3}
           placeholder="Tell us about your project (optional)"
-          className={`${inputCls} resize-none`}
+          className={`${s.input} resize-none`}
         />
       </div>
       <button
@@ -110,7 +134,7 @@ export default function QuoteForm({ id }: { id?: string }) {
       >
         Get My Free Quote
       </button>
-      <p className="text-center text-xs text-ink-500">
+      <p className={`text-center text-xs ${s.hint}`}>
         Free, no-obligation estimate — we reply within 24 hours.
       </p>
     </form>

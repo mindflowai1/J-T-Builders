@@ -13,9 +13,9 @@ const seg = (p: number, a: number, b: number) =>
 
 function hammerAngle(p: number) {
   if (p < 0.66) return -50 // raised, waiting
-  if (p < 0.76) return -50 * (1 - seg(p, 0.66, 0.76)) // strike 1
-  if (p < 0.81) return -50 * seg(p, 0.76, 0.81) * 0.7 // wind back up
-  if (p < 0.91) return -35 * (1 - seg(p, 0.81, 0.91)) // strike 2
+  if (p < 0.74) return -50 * (1 - seg(p, 0.66, 0.74)) // strike 1: swing down
+  if (p < 0.8) return -50 * seg(p, 0.74, 0.8) // wind back up to full raise
+  if (p < 0.88) return -50 * (1 - seg(p, 0.8, 0.88)) // strike 2: swing down
   return 0
 }
 
@@ -28,7 +28,8 @@ const PHASES = [
 ]
 
 export default function BuildStory() {
-  const ref = useRef<HTMLElement>(null)
+  const sectionRef = useRef<HTMLElement>(null)
+  const stageRef = useRef<HTMLDivElement>(null)
   const [p, setP] = useState(0)
 
   useEffect(() => {
@@ -36,18 +37,24 @@ export default function BuildStory() {
       setP(1) // show the finished scene, no scrubbing
       return
     }
-    const el = ref.current
-    if (!el) return
+    const section = sectionRef.current
+    const stage = stageRef.current
+    if (!section || !stage) return
     let raf = 0
     const update = () => {
       raf = 0
-      const rect = el.getBoundingClientRect()
-      const vh = window.innerHeight
-      // Pinned scrub over the sticky band: pins at top-[20svh] (p=0) and
-      // unpins when the section bottom meets the band bottom at 75svh (p=1).
-      const start = vh * 0.2
-      const total = rect.height - vh * 0.55
-      setP(Math.min(1, Math.max(0, (start - rect.top) / total)))
+      // Measure real rendered geometry instead of approximating with vh
+      // fractions — sticky's "top" offset resolves exactly via computed
+      // style, and the pin window is exactly (section - stage) tall
+      // regardless of that offset, so nothing here can drift out of sync.
+      const sectionRect = section.getBoundingClientRect()
+      const stickyTop = parseFloat(getComputedStyle(stage).top) || 0
+      const total = sectionRect.height - stage.offsetHeight
+      setP(
+        total > 0
+          ? Math.min(1, Math.max(0, (stickyTop - sectionRect.top) / total))
+          : 1,
+      )
     }
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update)
@@ -71,20 +78,23 @@ export default function BuildStory() {
   const topRail = seg(p, 0.56, 0.66)
   // Nail It
   const toolsIn = seg(p, 0.6, 0.66)
-  const nailDepth = (p >= 0.76 ? 9 : 0) + (p >= 0.91 ? 9 : 0)
-  const flash1 = p >= 0.76 ? 1 - seg(p, 0.76, 0.82) : 0
-  const flash2 = p >= 0.91 ? 1 - seg(p, 0.91, 0.97) : 0
+  const nailDepth = (p >= 0.74 ? 9 : 0) + (p >= 0.88 ? 9 : 0)
+  const flash1 = p >= 0.74 ? 1 - seg(p, 0.74, 0.8) : 0
+  const flash2 = p >= 0.88 ? 1 - seg(p, 0.88, 0.94) : 0
   const flash = Math.max(flash1, flash2)
 
   return (
-    <section ref={ref} className="relative h-[100vh] bg-cream-50">
-      {/* Half-height dark "stage" pinned mid-screen while the build scrubs */}
-      <div className="sticky top-[20svh] mx-auto flex h-[55svh] w-[min(72rem,calc(100%-2rem))] flex-col items-center justify-center overflow-hidden rounded-3xl bg-ink-900 px-4">
+    <section ref={sectionRef} className="relative h-[80vh] bg-cream-50">
+      {/* Full-bleed pinned strip, vertically centered in the viewport while pinned */}
+      <div
+        ref={stageRef}
+        className="sticky top-[30vh] flex h-[40vh] w-full flex-col items-center justify-center overflow-hidden bg-ink-900 px-4"
+      >
         {/* Scene */}
         <svg
           viewBox="0 0 420 320"
           aria-hidden="true"
-          className="w-full max-w-[min(24rem,60svh)]"
+          className="w-full max-w-[min(20rem,32vh)]"
         >
           {/* Blueprint outline (dashed, draws itself, then fades) */}
           <path
@@ -265,13 +275,13 @@ export default function BuildStory() {
         </svg>
 
         {/* Tagline phases — light up as the build progresses */}
-        <div className="mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 sm:gap-x-8">
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 sm:gap-x-7">
           {PHASES.map((phase) => {
             const reached = p >= phase.at
             return (
               <span
                 key={phase.label}
-                className={`font-display text-xl font-bold uppercase transition-all duration-500 sm:text-3xl ${
+                className={`font-display text-base font-bold uppercase transition-all duration-500 sm:text-2xl ${
                   reached ? 'scale-100 text-brand-500' : 'scale-95 text-cream-50/20'
                 }`}
               >

@@ -117,13 +117,13 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Quote form card — desktop only; mobile CTA scrolls to #contact */}
-        <div className="hidden rounded-2xl bg-white p-6 shadow-2xl lg:block">
-          <p className="font-display text-2xl font-bold text-ink-950 uppercase">
+        {/* Quote form card — glass over the video; desktop only, mobile CTA scrolls to #contact */}
+        <div className="hidden rounded-2xl border border-cream-50/15 bg-cream-50/10 p-6 shadow-2xl backdrop-blur-xl lg:block">
+          <p className="font-display text-2xl font-bold text-cream-50 uppercase">
             Get Your <span className="text-brand-500">Free Quote</span>
           </p>
           <div className="accent-rule mt-2 mb-5" />
-          <QuoteForm id="hero-quote" />
+          <QuoteForm id="hero-quote" variant="glass" />
         </div>
       </div>
 
