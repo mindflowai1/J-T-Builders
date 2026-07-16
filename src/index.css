@@ -1,0 +1,139 @@
+/* Self-hosted fonts — only the weights we use */
+@import "@fontsource/oswald/600.css";
+@import "@fontsource/oswald/700.css";
+@import "@fontsource/nunito-sans/400.css";
+@import "@fontsource/nunito-sans/600.css";
+@import "@fontsource/nunito-sans/700.css";
+
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   Design tokens — see docs/design-plan.md §2
+   ------------------------------------------------------------------ */
+@theme {
+  /* Brand accent — amber/gold (the ONLY accent color) */
+  --color-brand-400: #e89b1c; /* hover / lighter */
+  --color-brand-500: #d4880a; /* default accent */
+  --color-brand-600: #b37207; /* pressed / darker */
+
+  /* Warm neutrals */
+  --color-ink-500: #6e675a; /* muted text */
+  --color-ink-700: #3f3a30; /* body text on light */
+  --color-ink-900: #1c1913; /* dark section alt / cards on dark */
+  --color-ink-950: #12100c; /* near-black — hero bg, footer, dark sections */
+  --color-cream-50: #fbf6ed; /* warm off-white — light section bg */
+
+  /* Typography */
+  --font-display: "Oswald", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Nunito Sans", ui-sans-serif, system-ui, sans-serif;
+
+  /* Fluid type scale */
+  --text-hero: clamp(2.5rem, 7vw, 4.5rem);
+  --text-hero--line-height: 1.05;
+  --text-section: clamp(1.9rem, 4vw, 3rem);
+  --text-section--line-height: 1.1;
+
+  /* Motion */
+  --animate-ken-burns: ken-burns 24s ease-in-out infinite alternate;
+  --animate-fade-in: fade-in 0.5s ease-out both;
+  --animate-marquee: marquee 22s linear infinite;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes ken-burns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ------------------------------------------------------------------
+   Base styles
+   ------------------------------------------------------------------ */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Anchored sections stop below the fixed header */
+  section[id] {
+    scroll-margin-top: 5rem;
+  }
+
+  body {
+    @apply bg-white font-sans text-ink-700 antialiased;
+  }
+
+  /* Headings speak Oswald by default */
+  h1,
+  h2,
+  h3 {
+    @apply font-display;
+  }
+
+  /* Visible focus for keyboard users — amber ring everywhere */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand-500;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* ------------------------------------------------------------------
+   Recurring patterns
+   ------------------------------------------------------------------ */
+@utility eyebrow {
+  @apply font-sans text-sm font-bold tracking-[0.2em] uppercase text-brand-500;
+}
+
+/* Signature detail: short amber rule under section eyebrows */
+@utility accent-rule {
+  @apply h-1 w-12 rounded-full bg-brand-500;
+}
+
+/* Oversized "ghost" numerals — outlined amber, hollow fill (editorial lists) */
+@utility text-stroke-brand {
+  color: transparent;
+  -webkit-text-stroke: 1.5px
+    color-mix(in srgb, var(--color-brand-500) 55%, transparent);
+}
+
+/* Horizontal scroll without a visible scrollbar (mobile trust strip, tabs) */
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
