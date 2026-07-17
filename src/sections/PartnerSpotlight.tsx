@@ -31,15 +31,15 @@ export default function PartnerSpotlight() {
 
         {/* Copy + partner wordmarks */}
         <Reveal direction="right" delay={120} className="mt-6 lg:mt-0">
-          <p className="eyebrow">Official Partners</p>
+          <p className="eyebrow">Certified Installer</p>
           <div className="accent-rule mt-2 mb-4" />
           <h2 className="text-section font-bold text-ink-950 uppercase">
-            Trex & TimberTech{' '}
+            Trex, TimberTech & Wolf{' '}
             <span className="text-brand-500">Composite Experts</span>
           </h2>
           <p className="mt-4 text-lg leading-relaxed">
-            As official Trex & TimberTech partners, we build with the industry's
-            leading composite decking, premium materials matched with
+            As a certified Trex, TimberTech & Wolf installer, we build with the
+            industry's leading composite decking, premium materials matched with
             second-generation craftsmanship, so your deck looks beautiful and
             stays that way for decades.
           </p>
@@ -56,7 +56,7 @@ export default function PartnerSpotlight() {
             ))}
           </ul>
           <div className="mt-8 flex flex-wrap gap-4">
-            {['Trex', 'TimberTech'].map((partner) => (
+            {['Trex', 'TimberTech', 'Wolf'].map((partner) => (
               <div
                 key={partner}
                 className="rounded-xl border border-ink-500/20 px-6 py-3.5 text-center"
@@ -65,7 +65,7 @@ export default function PartnerSpotlight() {
                   {partner}
                 </p>
                 <p className="text-xs font-bold tracking-widest text-ink-500 uppercase">
-                  Official Partner
+                  Certified Installer
                 </p>
               </div>
             ))}

@@ -94,7 +94,7 @@ export default function Hero() {
             to Perfection
           </h1>
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-cream-50/85">
-            Serving Bethel and all of Fairfield County, we turn your vision into
+            Based in Bethel, serving Fairfield County, we turn your vision into
             a space that adds{' '}
             <strong className="text-cream-50">comfort, value, and style</strong>{' '}
             to your home, built by second-generation craftsmen and delivered on

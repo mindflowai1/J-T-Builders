@@ -12,7 +12,7 @@ const SERVICES = [
     img: pergola,
     alt: 'Custom cedar pergola built by J&T Builders',
     items: [
-      'Trex & TimberTech composite decks',
+      'Trex, TimberTech & Wolf composite decks',
       '4-season screen rooms & gazebos',
       'Pergola design & outdoor living',
       'Railings, stairs & custom builds',
@@ -65,7 +65,7 @@ export default function Services() {
             <span className="text-brand-500">Home Builders</span>
           </h2>
           <p className="mt-4 text-lg leading-relaxed">
-            From custom Trex & TimberTech decks to complete home remodeling, we
+            From custom Trex, TimberTech & Wolf decks to complete home remodeling, we
             deliver premium craftsmanship on every project, start to finish,
             as one accountable team.
           </p>

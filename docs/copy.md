@@ -9,12 +9,12 @@
 ## Company facts (extracted from the old site; do not contradict)
 
 - **Name:** J&T Builders LLC
-- **Base:** Bethel, CT 06801, serving Bethel, Fairfield County and beyond
+- **Base:** Based in Bethel, CT 06801, serving all of Fairfield County
   (Fairfield, Greenwich, Stamford, Westport, CT)
 - **Story:** 2nd-generation, family-run builders ("second generation of quality")
 - **Proof points:** 24+ years of excellence · 489+ projects completed · OSHA certified ·
-  Licensed & insured · Trex & TimberTech partners · 5-year workmanship warranty ·
-  On-time delivery · Free / no-obligation estimates, reply within 24 hours
+  Licensed & insured · Trex, TimberTech & Wolf certified installer · 5-year workmanship
+  warranty · On-time delivery · Free / no-obligation estimates, reply within 24 hours
 - **Positioning:** Deck specialists **and** full-service home builders
 - **Taglines:** "Plan It. Build It. Nail It." · "From Demolition to Perfection"
 - **Phone:** (203) 300-6384 · **Email:** info@jtbuildersct.com
@@ -32,7 +32,7 @@
 > **TO PERFECTION**
 
 **Subhead:**
-> Serving Bethel and all of Fairfield County, we turn your vision into a space that adds
+> Based in Bethel, serving Fairfield County, we turn your vision into a space that adds
 > **comfort, value, and style** to your home, built by second-generation craftsmen and
 > delivered on time.
 
@@ -54,11 +54,11 @@
 ## SERVICES: "Deck Specialists & Full-Service *Home Builders*"
 
 **Eyebrow:** What We Do
-**Intro:** From custom Trex & TimberTech decks to complete home remodeling, we deliver
+**Intro:** From custom Trex, TimberTech & Wolf decks to complete home remodeling, we deliver
 premium craftsmanship on every project, start to finish, as one accountable team.
 
 **1. Decks, Pergolas & Sun Rooms**
-- Trex & TimberTech composite decks
+- Trex, TimberTech & Wolf composite decks
 - 4-season screen rooms & gazebos
 - Pergola design & outdoor living
 - Railings, stairs & custom builds

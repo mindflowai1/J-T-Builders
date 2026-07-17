@@ -1,7 +1,7 @@
 # J&T Builders: Website
 
 Marketing site for **J&T Builders LLC**, 2nd-generation deck specialists & full-service
-home builders in Bethel, CT (Trex & TimberTech partners).
+home builders in Bethel, CT (Trex, TimberTech & Wolf certified installer).
 
 Live reference (old site being replaced): https://jtbuildersct.com
 
