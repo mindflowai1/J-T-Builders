@@ -1,5 +1,8 @@
-import { useState } from 'react'
+import { useState, type FormEvent } from 'react'
 import { CheckIcon } from './icons'
+
+const WEBHOOK_URL =
+  'https://n8n-n8n-start.kof6cn.easypanel.host/webhook/j-and-t-builders'
 
 const SERVICES = [
   'Decks, Pergolas & Sun Rooms',
@@ -14,6 +17,7 @@ const STYLES = {
       'w-full rounded-lg border border-ink-500/25 bg-white px-4 py-3 text-base text-ink-950 placeholder:text-ink-500/70 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/40',
     select: 'text-ink-950 invalid:text-ink-500/70',
     hint: 'text-ink-500',
+    error: 'text-red-600',
     successTitle: 'text-ink-950',
     successHint: 'text-ink-500',
   },
@@ -22,6 +26,7 @@ const STYLES = {
       'w-full rounded-lg border border-cream-50/25 bg-cream-50/10 px-4 py-3 text-base text-cream-50 placeholder:text-cream-50/60 backdrop-blur-md focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/40',
     select: 'text-cream-50 invalid:text-cream-50/60 [&>option]:text-ink-950',
     hint: 'text-cream-50/70',
+    error: 'text-red-400',
     successTitle: 'text-cream-50',
     successHint: 'text-cream-50/70',
   },
@@ -29,9 +34,7 @@ const STYLES = {
 
 /**
  * Lead-capture form, reused in the hero (glass, over the video) and the
- * contact section (light, on a white card).
- * TODO: wire submission to a real destination (email service / backend) — currently
- * it only shows the success state locally. See docs/design-plan.md open items.
+ * contact section (light, on a white card). Posts to the J&T n8n webhook.
  */
 export default function QuoteForm({
   id,
@@ -40,10 +43,46 @@ export default function QuoteForm({
   id?: string
   variant?: 'light' | 'glass'
 }) {
-  const [submitted, setSubmitted] = useState(false)
+  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>(
+    'idle',
+  )
   const s = STYLES[variant]
 
-  if (submitted) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const form = e.currentTarget
+    const data = new FormData(form)
+
+    // Honeypot: real visitors never see or fill this field; bots often do.
+    if (data.get('company')) {
+      setStatus('sent')
+      return
+    }
+
+    setStatus('sending')
+    try {
+      const res = await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: data.get('name'),
+          phone: data.get('phone'),
+          address: data.get('address'),
+          service: data.get('service'),
+          message: data.get('message') || '',
+          botcheck: false,
+          source: `J&T Builders Website, ${id === 'hero-quote' ? 'Hero Form' : 'Contact Form'}`,
+        }),
+      })
+      if (!res.ok) throw new Error(`Request failed: ${res.status}`)
+      setStatus('sent')
+      form.reset()
+    } catch {
+      setStatus('error')
+    }
+  }
+
+  if (status === 'sent') {
     return (
       <div className="flex flex-col items-center gap-3 py-10 text-center">
         <span className="flex size-12 items-center justify-center rounded-full bg-brand-500 text-ink-950">
@@ -60,13 +99,16 @@ export default function QuoteForm({
   }
 
   return (
-    <form
-      className="space-y-3"
-      onSubmit={(e) => {
-        e.preventDefault()
-        setSubmitted(true)
-      }}
-    >
+    <form className="space-y-3" onSubmit={handleSubmit}>
+      {/* Honeypot — visually hidden and unreachable by keyboard/screen readers */}
+      <input
+        type="text"
+        name="company"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="absolute -left-full opacity-0"
+      />
       <div>
         <label htmlFor={`${id}-name`} className="sr-only">
           Name
@@ -92,6 +134,20 @@ export default function QuoteForm({
           required
           autoComplete="tel"
           placeholder="Phone number"
+          className={s.input}
+        />
+      </div>
+      <div>
+        <label htmlFor={`${id}-address`} className="sr-only">
+          Property address
+        </label>
+        <input
+          id={`${id}-address`}
+          name="address"
+          type="text"
+          required
+          autoComplete="street-address"
+          placeholder="Property address"
           className={s.input}
         />
       </div>
@@ -130,12 +186,18 @@ export default function QuoteForm({
       </div>
       <button
         type="submit"
-        className="w-full rounded-lg bg-brand-500 px-6 py-3.5 font-bold text-ink-950 transition-colors hover:bg-brand-400 active:bg-brand-600"
+        disabled={status === 'sending'}
+        className="w-full rounded-lg bg-brand-500 px-6 py-3.5 font-bold text-ink-950 transition-colors hover:bg-brand-400 active:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        Get My Free Quote
+        {status === 'sending' ? 'Sending...' : 'Get My Free Quote'}
       </button>
+      {status === 'error' && (
+        <p className={`text-center text-xs font-semibold ${s.error}`}>
+          Something went wrong. Please try again or call us directly.
+        </p>
+      )}
       <p className={`text-center text-xs ${s.hint}`}>
-        Free, no-obligation estimate — we reply within 24 hours.
+        Free, no-obligation estimate. We reply within 24 hours.
       </p>
     </form>
   )

@@ -66,8 +66,8 @@ export default function Services() {
           </h2>
           <p className="mt-4 text-lg leading-relaxed">
             From custom Trex & TimberTech decks to complete home remodeling, we
-            deliver premium craftsmanship on every project — start to finish,
-            one accountable team.
+            deliver premium craftsmanship on every project, start to finish,
+            as one accountable team.
           </p>
         </Reveal>
 

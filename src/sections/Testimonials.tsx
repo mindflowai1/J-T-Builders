@@ -9,7 +9,7 @@ const REVIEWS = [
     name: 'Sarah K.',
     location: 'Fairfield, CT',
     quote:
-      'J&T Builders transformed our backyard completely. The deck they built is absolutely stunning — quality craftsmanship and they finished ahead of schedule. Highly recommend!',
+      'J&T Builders transformed our backyard completely. The deck they built is absolutely stunning. Quality craftsmanship and they finished ahead of schedule. Highly recommend!',
   },
   {
     name: 'Michael T.',
@@ -27,7 +27,7 @@ const REVIEWS = [
     name: 'Jennifer L.',
     location: 'Westport, CT',
     quote:
-      'From demolition to the final nail, J&T was exceptional. Our new deck railings and stairs completely changed the backyard. Second generation of quality — you can feel it in the work.',
+      'From demolition to the final nail, J&T was exceptional. Our new deck railings and stairs completely changed the backyard. Second generation of quality; you can feel it in the work.',
   },
 ]
 

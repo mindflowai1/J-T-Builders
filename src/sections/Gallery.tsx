@@ -78,7 +78,7 @@ export default function Gallery() {
             Recent <span className="text-brand-500">Projects</span>
           </h2>
           <p className="mt-4 text-lg leading-relaxed text-cream-50/80">
-            Real projects, real homes — from Bethel to all of Fairfield County.
+            Real projects, real homes, from Bethel to all of Fairfield County.
           </p>
         </Reveal>
 
@@ -119,7 +119,7 @@ export default function Gallery() {
             >
               <img
                 src={project.img}
-                alt={`${project.title} — J&T Builders project`}
+                alt={`${project.title}, a J&T Builders project`}
                 loading="lazy"
                 className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
@@ -171,7 +171,7 @@ export default function Gallery() {
           >
             <img
               src={projects[lightbox].img}
-              alt={`${projects[lightbox].title} — J&T Builders project`}
+              alt={`${projects[lightbox].title}, a J&T Builders project`}
               className="max-h-[80vh] w-auto rounded-xl object-contain"
             />
             <figcaption className="mt-3 text-center">

@@ -39,7 +39,7 @@ export default function PartnerSpotlight() {
           </h2>
           <p className="mt-4 text-lg leading-relaxed">
             As official Trex & TimberTech partners, we build with the industry's
-            leading composite decking — premium materials matched with
+            leading composite decking, premium materials matched with
             second-generation craftsmanship, so your deck looks beautiful and
             stays that way for decades.
           </p>

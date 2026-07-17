@@ -19,7 +19,7 @@ export default function SocialProofBar() {
           </div>
         </div>
         <p className="text-center text-sm font-semibold text-ink-700 sm:text-base">
-          Homeowners rate us 5 stars on Google —{' '}
+          Homeowners rate us 5 stars on Google,{' '}
           <a
             href="#reviews"
             className="font-bold text-brand-600 underline-offset-4 transition-colors hover:text-brand-500 hover:underline"

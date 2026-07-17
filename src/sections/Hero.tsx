@@ -97,7 +97,7 @@ export default function Hero() {
             Serving Bethel and all of Fairfield County, we turn your vision into
             a space that adds{' '}
             <strong className="text-cream-50">comfort, value, and style</strong>{' '}
-            to your home — built by second-generation craftsmen and delivered on
+            to your home, built by second-generation craftsmen and delivered on
             time.
           </p>
           <div className="mt-8 flex flex-wrap gap-4">

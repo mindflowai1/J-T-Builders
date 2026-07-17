@@ -1,15 +1,15 @@
-# J&T Builders — Copy (reworked)
+# J&T Builders: Copy (reworked)
 
-> Reworked from the existing site (jtbuildersct.com). **No invented facts** — every claim
+> Reworked from the existing site (jtbuildersct.com). **No invented facts**: every claim
 > below is grounded in copy already present on the old site. This file is the single source
 > of truth for on-page wording during development.
 
 ---
 
-## Company facts (extracted from the old site — do not contradict)
+## Company facts (extracted from the old site; do not contradict)
 
 - **Name:** J&T Builders LLC
-- **Base:** Bethel, CT 06801 — serving Bethel, Fairfield County and beyond
+- **Base:** Bethel, CT 06801, serving Bethel, Fairfield County and beyond
   (Fairfield, Greenwich, Stamford, Westport, CT)
 - **Story:** 2nd-generation, family-run builders ("second generation of quality")
 - **Proof points:** 24+ years of excellence · 489+ projects completed · OSHA certified ·
@@ -33,7 +33,7 @@
 
 **Subhead:**
 > Serving Bethel and all of Fairfield County, we turn your vision into a space that adds
-> **comfort, value, and style** to your home — built by second-generation craftsmen and
+> **comfort, value, and style** to your home, built by second-generation craftsmen and
 > delivered on time.
 
 **Primary CTA:** Get Your Free Quote
@@ -45,17 +45,17 @@
 
 ## STATS BAR
 
-- **24+** — Years of Excellence
-- **489+** — Projects Completed
-- **2nd** — Generation Builders
+- **24+**: Years of Excellence
+- **489+**: Projects Completed
+- **2nd**: Generation Builders
 
 ---
 
-## SERVICES — "Deck Specialists & Full-Service *Home Builders*"
+## SERVICES: "Deck Specialists & Full-Service *Home Builders*"
 
 **Eyebrow:** What We Do
 **Intro:** From custom Trex & TimberTech decks to complete home remodeling, we deliver
-premium craftsmanship on every project — start to finish, one accountable team.
+premium craftsmanship on every project, start to finish, as one accountable team.
 
 **1. Decks, Pergolas & Sun Rooms**
 - Trex & TimberTech composite decks
@@ -77,48 +77,48 @@ premium craftsmanship on every project — start to finish, one accountable team
 
 ---
 
-## WHY CHOOSE US — "Premium Craftsmanship *Built on Trust*"
+## WHY CHOOSE US: "Premium Craftsmanship *Built on Trust*"
 
 **Eyebrow:** Why Choose Us
 
-- **2nd Generation** — A family legacy of quality & reliability you can feel in the work
-- **OSHA Certified** — A safety-first approach on every project
-- **Licensed & Insured** — Full protection for your investment
-- **On-Time Delivery** — Respect for your schedule & timeline
+- **2nd Generation**: A family legacy of quality & reliability you can feel in the work
+- **OSHA Certified**: A safety-first approach on every project
+- **Licensed & Insured**: Full protection for your investment
+- **On-Time Delivery**: Respect for your schedule & timeline
 
 ---
 
-## OUR PROCESS — "Plan It. Build It. Nail It."
+## OUR PROCESS: "Plan It. Build It. Nail It."
 
-1. **Plan It** — Detailed consultation & design
-2. **Build It** — Expert craftsmanship & execution
-3. **Nail It** — Quality checks & refinement
-4. **Perfect It** — Final walkthrough & warranty
+1. **Plan It**: Detailed consultation & design
+2. **Build It**: Expert craftsmanship & execution
+3. **Nail It**: Quality checks & refinement
+4. **Perfect It**: Final walkthrough & warranty
 
 ---
 
-## TESTIMONIALS — "What Our Clients *Say*"
+## TESTIMONIALS: "What Our Clients *Say*"
 
 **Eyebrow:** Live from Google Business Profile
 
-- **Sarah K. — Fairfield, CT:** "J&T Builders transformed our backyard completely. The deck
-  they built is absolutely stunning — quality craftsmanship and they finished ahead of
+- **Sarah K., Fairfield, CT:** "J&T Builders transformed our backyard completely. The deck
+  they built is absolutely stunning. Quality craftsmanship and they finished ahead of
   schedule. Highly recommend!"
-- **Michael T. — Greenwich, CT:** "The pergola they built is the centerpiece of our backyard.
+- **Michael T., Greenwich, CT:** "The pergola they built is the centerpiece of our backyard.
   Beautiful craftsmanship, fair pricing, and the team was a pleasure to work with. Will
   definitely hire again."
-- **Robert M. — Stamford, CT:** "We hired J&T for a full kitchen remodel and master suite
+- **Robert M., Stamford, CT:** "We hired J&T for a full kitchen remodel and master suite
   addition. The attention to detail was incredible. They communicated every step of the way
   and the result exceeded our expectations."
-- **Jennifer L. — Westport, CT:** "From demolition to the final nail, J&T was exceptional. Our
-  new deck railings and stairs completely changed the backyard. Second generation of quality —
+- **Jennifer L., Westport, CT:** "From demolition to the final nail, J&T was exceptional. Our
+  new deck railings and stairs completely changed the backyard. Second generation of quality;
   you can feel it in the work."
 
 **CTA:** Leave Us a Review on Google
 
 ---
 
-## FINAL CTA / CONTACT — "Let's Talk About Your Project"
+## FINAL CTA / CONTACT: "Let's Talk About Your Project"
 
 **Headline:** Start Your Project Today
 **Subhead:** Fill out the form and we'll get back to you within 24 hours with a free,

@@ -11,7 +11,7 @@ function Logo({ scrolled }: { scrolled: boolean }) {
   return (
     <a
       href="#top"
-      aria-label="J&T Builders — back to top"
+      aria-label="J&T Builders, back to top"
       className="shrink-0 self-start"
     >
       <img

@@ -53,7 +53,7 @@ export default function Contact() {
           </h2>
           <p className="mt-4 max-w-xl text-lg leading-relaxed text-cream-50/80">
             Fill out the form and we'll get back to you within 24 hours with a
-            free, no-obligation estimate — backed by our 5-year workmanship
+            free, no-obligation estimate, backed by our 5-year workmanship
             warranty.
           </p>
 

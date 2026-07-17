@@ -82,7 +82,7 @@ export default function Process() {
             Plan It. Build It. <span className="text-brand-500">Nail It.</span>
           </h2>
           <p className="mt-4 text-lg leading-relaxed">
-            Four clear steps from first conversation to final walkthrough — so
+            Four clear steps from first conversation to final walkthrough, so
             you always know exactly where your project stands.
           </p>
         </Reveal>
