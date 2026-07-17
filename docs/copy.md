@@ -17,7 +17,7 @@
   warranty · On-time delivery · Free / no-obligation estimates, reply within 24 hours
 - **Positioning:** Deck specialists **and** full-service home builders
 - **Taglines:** "Plan It. Build It. Nail It." · "From Demolition to Perfection"
-- **Phone:** (203) 300-6384 · **Email:** info@jtbuildersct.com
+- **Phone:** (203) 300-6384 · **Email:** contact@j-tbuilders.com
 - **Hours:** Mon–Fri: 8:00 AM – 6:30 PM
 - **Legal entity contact (from ToS/Privacy):** (475) 348-7838
 
@@ -125,6 +125,6 @@ premium craftsmanship on every project, start to finish, as one accountable team
 no-obligation estimate. Backed by our 5-year workmanship warranty.
 
 - **Phone:** (203) 300-6384
-- **Email:** info@jtbuildersct.com
+- **Email:** contact@j-tbuilders.com
 - **Area:** Bethel, CT · Fairfield County & beyond
 - **Hours:** Mon–Fri: 8:00 AM – 6:30 PM
