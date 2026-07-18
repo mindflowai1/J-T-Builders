@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import heroDeck from '../assets/hero-deck.webp'
+import heroPoster from '../assets/hero-poster.webp'
 import JobberForm from '../components/JobberForm'
-import { PhoneIcon, CheckIcon, PlayIcon } from '../components/icons'
-import { SITE } from '../lib/site'
+import { ArrowRightIcon, CheckIcon, PlayIcon } from '../components/icons'
 
 /** Rotating service tags — from the old site's hero */
 const TAGS = ['Custom Deck Building', 'Decks & Pergolas', 'Railings & Exteriors']
@@ -51,7 +50,7 @@ export default function Hero() {
         <video
           ref={videoRef}
           src="/hero-video.mp4"
-          poster={heroDeck}
+          poster={heroPoster}
           autoPlay
           loop
           muted
@@ -60,7 +59,7 @@ export default function Hero() {
           className="size-full object-cover motion-reduce:hidden"
         />
         <img
-          src={heroDeck}
+          src={heroPoster}
           alt=""
           className="hidden size-full object-cover motion-reduce:block"
         />
@@ -102,11 +101,11 @@ export default function Hero() {
           </p>
           <div className="mt-8 flex flex-wrap gap-4">
             <a
-              href={SITE.phoneHref}
-              className="inline-flex items-center gap-2 rounded-lg border-2 border-cream-50/30 px-7 py-3.5 font-bold text-cream-50 transition-colors hover:border-brand-500 hover:text-brand-400"
+              href="#projects"
+              className="group inline-flex items-center gap-3 rounded-lg border-2 border-cream-50/30 px-7 py-3.5 font-bold text-cream-50 transition-colors hover:border-brand-500 hover:text-brand-400"
             >
-              <PhoneIcon className="size-4" />
-              Call {SITE.phone}
+              See Our Work
+              <ArrowRightIcon className="size-4 transition-transform duration-300 group-hover:translate-x-1.5" />
             </a>
           </div>
         </div>
