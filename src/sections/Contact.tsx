@@ -1,4 +1,4 @@
-import JobberForm from '../components/JobberForm'
+import { JOBBER_FORM_URL } from '../components/JobberForm'
 import Reveal from '../components/Reveal'
 import {
   CheckIcon,
@@ -95,13 +95,34 @@ export default function Contact() {
           </ul>
         </Reveal>
 
-        {/* Quote form card: official Jobber embed, leads land straight in Jobber */}
+        {/* Quote card: the Jobber form itself lives in the hero (#quote-form);
+            this card routes visitors there or to the standalone form. */}
         <Reveal delay={120} className="rounded-2xl bg-white p-6 shadow-2xl sm:p-8">
           <p className="font-display text-2xl font-bold text-ink-950 uppercase">
             Get Your <span className="text-brand-500">Free Quote</span>
           </p>
           <div className="accent-rule mt-2 mb-5" />
-          <JobberForm />
+          <p className="leading-relaxed text-ink-700">
+            Fill out the quote form at the top of the page, or open our
+            request form below. It only takes a minute, and we'll get back to
+            you within 24 hours.
+          </p>
+          <div className="mt-5 grid gap-3">
+            <a
+              href="#quote-form"
+              className="block rounded-lg bg-brand-500 px-6 py-3.5 text-center font-bold text-ink-950 transition-colors hover:bg-brand-400 active:bg-brand-600"
+            >
+              Go to the Quote Form
+            </a>
+            <a
+              href={JOBBER_FORM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block rounded-lg border-2 border-ink-950/15 px-6 py-3 text-center font-bold text-ink-950 transition-colors hover:border-brand-500"
+            >
+              Open the Request Form
+            </a>
+          </div>
         </Reveal>
       </div>
     </section>

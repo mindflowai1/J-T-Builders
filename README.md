@@ -36,17 +36,20 @@ Vercel auto-detects the Vite preset, no extra configuration needed:
 - [`docs/design-plan.md`](docs/design-plan.md): design system + page architecture
 - [`docs/design-notes.md`](docs/design-notes.md): reference-site analysis
 
-## Lead form (Jobber)
+## Lead capture (all Jobber, no middleware)
 
-The quote form in the contact section is the **official Jobber work-request embed**
-(`src/components/JobberForm.tsx`): leads land directly in the client's Jobber account.
-The form's fields are managed in Jobber's form builder (form id `4882418`), not in this
-codebase. Only one embed instance can exist per page (the snippet targets a fixed div id),
-so the hero's "Get Your Free Quote" CTA scrolls to `#contact`.
+The quote form is the official Jobber work-request embed (`src/components/JobberForm.tsx`);
+leads land directly in the client's Jobber account. Fields and colors are managed in Jobber
+(form builder, form id `4882418`, and Client Hub branding), not in this codebase.
 
-Legacy: an earlier n8n webhook flow and its email template
-([`docs/email-notification.html`](docs/email-notification.html)) are no longer wired up,
-kept for reference only.
+The snippet only supports one embed instance per page (and the form only renders correctly
+through the official snippet, since the form page depends on the snippet's resizer). The
+single embed lives in the hero card (`#quote-form`) on every breakpoint, inside our own
+scroll container (the embed auto-sizes to the full form height). Every "Get Your Free
+Quote" CTA (header, mobile action bar, contact card) anchors to `#quote-form`; the contact
+card also links to the standalone form as a backup.
+[`docs/email-notification.html`](docs/email-notification.html) is a legacy n8n email
+template, kept for reference only.
 
 ## Pending before launch
 

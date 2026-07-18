@@ -89,7 +89,7 @@ export default function Header() {
             <PhoneIcon className="size-5" />
           </a>
           <a
-            href="#contact"
+            href="#quote-form"
             className="hidden rounded-lg bg-brand-500 px-5 py-2.5 text-sm font-bold text-ink-950 transition-colors hover:bg-brand-400 sm:block"
           >
             Get Your Free Quote
@@ -155,7 +155,7 @@ export default function Header() {
             {SITE.phone}
           </a>
           <a
-            href="#contact"
+            href="#quote-form"
             onClick={() => setMenuOpen(false)}
             className="block rounded-lg bg-brand-500 px-5 py-3 text-center font-bold text-ink-950 transition-colors hover:bg-brand-400"
           >

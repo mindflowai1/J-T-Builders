@@ -31,7 +31,7 @@ export default function MobileActionBar() {
         Call Us
       </a>
       <a
-        href="#contact"
+        href="#quote-form"
         className="flex-1 rounded-lg bg-brand-500 px-4 py-3 text-center font-bold text-ink-950 transition-colors active:bg-brand-600"
       >
         Get Free Quote

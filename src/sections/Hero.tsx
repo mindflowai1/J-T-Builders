@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import heroDeck from '../assets/hero-deck.webp'
+import JobberForm from '../components/JobberForm'
 import { PhoneIcon, CheckIcon, PlayIcon } from '../components/icons'
 import { SITE } from '../lib/site'
 
@@ -81,7 +82,7 @@ export default function Hero() {
       )}
 
       {/* Content */}
-      <div className="relative mx-auto flex w-full max-w-7xl flex-1 items-center px-4 pt-28 pb-12 sm:px-6 lg:pt-32">
+      <div className="relative mx-auto grid w-full max-w-7xl flex-1 items-center gap-12 px-4 pt-28 pb-12 sm:px-6 lg:grid-cols-[1fr_400px] lg:pt-32">
         <div className="max-w-2xl">
           {/* Rotating tag — key remount replays the fade-in */}
           <p key={tagIndex} className="eyebrow animate-fade-in mb-4">
@@ -101,18 +102,32 @@ export default function Hero() {
           </p>
           <div className="mt-8 flex flex-wrap gap-4">
             <a
-              href="#contact"
-              className="rounded-lg bg-brand-500 px-7 py-3.5 font-bold text-ink-950 transition-colors hover:bg-brand-400 active:bg-brand-600"
-            >
-              Get Your Free Quote
-            </a>
-            <a
               href={SITE.phoneHref}
               className="inline-flex items-center gap-2 rounded-lg border-2 border-cream-50/30 px-7 py-3.5 font-bold text-cream-50 transition-colors hover:border-brand-500 hover:text-brand-400"
             >
               <PhoneIcon className="size-4" />
               Call {SITE.phone}
             </a>
+          </div>
+        </div>
+
+        {/* Quote form card: the official Jobber embed (leads land straight in
+            Jobber), framed in our design. Single instance for the whole page;
+            all "Get Your Free Quote" CTAs anchor here via #quote-form. */}
+        <div
+          id="quote-form"
+          className="scroll-mt-24 overflow-hidden rounded-2xl border border-cream-50/20 bg-white/95 shadow-2xl backdrop-blur-xl"
+        >
+          <div className="px-6 pt-6">
+            <p className="font-display text-2xl font-bold text-ink-950 uppercase">
+              Get Your <span className="text-brand-500">Free Quote</span>
+            </p>
+            <div className="accent-rule mt-2 mb-3" />
+          </div>
+          {/* Our own scroll container: the embed auto-sizes to full form
+              height inside, so scrolling happens out here, never inside the iframe */}
+          <div className="max-h-[clamp(400px,54vh,600px)] overflow-y-auto px-2 pb-2">
+            <JobberForm />
           </div>
         </div>
       </div>
