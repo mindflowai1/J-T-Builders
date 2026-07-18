@@ -81,6 +81,13 @@ premium craftsmanship on every project, start to finish, as one accountable team
 
 **Eyebrow:** Why Choose Us
 
+**The owners (portraits, left column):** two portrait cards side by side, name + role
+(pending from client), with the caption:
+> A family business, now in its second generation. When you work with J&T, you work with
+> the builders themselves, and it shows: quality you can feel in the work.
+
+**The reasons (numbered list, right column):**
+
 - **2nd Generation**: A family legacy of quality & reliability you can feel in the work
 - **OSHA Certified**: A safety-first approach on every project
 - **Licensed & Insured**: Full protection for your investment

@@ -36,19 +36,22 @@ Vercel auto-detects the Vite preset, no extra configuration needed:
 - [`docs/design-plan.md`](docs/design-plan.md): design system + page architecture
 - [`docs/design-notes.md`](docs/design-notes.md): reference-site analysis
 
-## Lead form
+## Lead form (Jobber)
 
-`QuoteForm` (used in the hero and the contact section) posts JSON to an n8n webhook:
-`https://n8n-n8n-start.kof6cn.easypanel.host/webhook/j-and-t-builders`. Payload: `name`,
-`phone`, `address`, `service`, `message`, `botcheck` (honeypot, always `false` from real
-submissions), `source` (identifies which form: hero vs. contact).
+The quote form in the contact section is the **official Jobber work-request embed**
+(`src/components/JobberForm.tsx`): leads land directly in the client's Jobber account.
+The form's fields are managed in Jobber's form builder (form id `4882418`), not in this
+codebase. Only one embed instance can exist per page (the snippet targets a fixed div id),
+so the hero's "Get Your Free Quote" CTA scrolls to `#contact`.
 
-The matching lead-notification email template lives at
-[`docs/email-notification.html`](docs/email-notification.html) (paste into the n8n Email
-node's HTML field).
+Legacy: an earlier n8n webhook flow and its email template
+([`docs/email-notification.html`](docs/email-notification.html)) are no longer wired up,
+kept for reference only.
 
 ## Pending before launch
 
-- Contact section (`#contact`) copy is final; confirm the n8n webhook is live and wired to
-  wherever leads should land (email, CRM, etc.)
+- Owners section: swap portrait placeholders in `WhyChooseUs.tsx` for real photos, names,
+  and titles (waiting on client)
+- Review the Jobber form's field list in Jobber's form builder (name, phone, address,
+  service, project details) so it matches what the site promises
 - Decide static vs. live Google rating in the social-proof bar

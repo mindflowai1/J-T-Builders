@@ -1,4 +1,4 @@
-import QuoteForm from '../components/QuoteForm'
+import JobberForm from '../components/JobberForm'
 import Reveal from '../components/Reveal'
 import {
   CheckIcon,
@@ -95,13 +95,13 @@ export default function Contact() {
           </ul>
         </Reveal>
 
-        {/* Quote form card */}
+        {/* Quote form card: official Jobber embed, leads land straight in Jobber */}
         <Reveal delay={120} className="rounded-2xl bg-white p-6 shadow-2xl sm:p-8">
           <p className="font-display text-2xl font-bold text-ink-950 uppercase">
             Get Your <span className="text-brand-500">Free Quote</span>
           </p>
           <div className="accent-rule mt-2 mb-5" />
-          <QuoteForm id="contact-quote" />
+          <JobberForm />
         </Reveal>
       </div>
     </section>

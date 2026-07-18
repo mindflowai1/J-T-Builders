@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import heroDeck from '../assets/hero-deck.webp'
-import QuoteForm from '../components/QuoteForm'
 import { PhoneIcon, CheckIcon, PlayIcon } from '../components/icons'
 import { SITE } from '../lib/site'
 
@@ -82,7 +81,7 @@ export default function Hero() {
       )}
 
       {/* Content */}
-      <div className="relative mx-auto grid w-full max-w-7xl flex-1 items-center gap-12 px-4 pt-28 pb-12 sm:px-6 lg:grid-cols-[1fr_400px] lg:pt-32">
+      <div className="relative mx-auto flex w-full max-w-7xl flex-1 items-center px-4 pt-28 pb-12 sm:px-6 lg:pt-32">
         <div className="max-w-2xl">
           {/* Rotating tag — key remount replays the fade-in */}
           <p key={tagIndex} className="eyebrow animate-fade-in mb-4">
@@ -103,7 +102,7 @@ export default function Hero() {
           <div className="mt-8 flex flex-wrap gap-4">
             <a
               href="#contact"
-              className="rounded-lg bg-brand-500 px-7 py-3.5 font-bold text-ink-950 transition-colors hover:bg-brand-400 active:bg-brand-600 lg:hidden"
+              className="rounded-lg bg-brand-500 px-7 py-3.5 font-bold text-ink-950 transition-colors hover:bg-brand-400 active:bg-brand-600"
             >
               Get Your Free Quote
             </a>
@@ -115,15 +114,6 @@ export default function Hero() {
               Call {SITE.phone}
             </a>
           </div>
-        </div>
-
-        {/* Quote form card — glass over the video; desktop only, mobile CTA scrolls to #contact */}
-        <div className="hidden rounded-2xl border border-cream-50/15 bg-cream-50/10 p-6 shadow-2xl backdrop-blur-xl lg:block">
-          <p className="font-display text-2xl font-bold text-cream-50 uppercase">
-            Get Your <span className="text-brand-500">Free Quote</span>
-          </p>
-          <div className="accent-rule mt-2 mb-5" />
-          <QuoteForm id="hero-quote" variant="glass" />
         </div>
       </div>
 
