@@ -1,5 +1,5 @@
 import pergola from '../assets/pergola.webp'
-import exteriorSiding from '../assets/exterior-siding.webp'
+import deckRailingSteps from '../assets/deck-railing-steps.webp'
 import serviceRemodel from '../assets/service-remodel.webp'
 import { ArrowRightIcon, CheckIcon } from '../components/icons'
 import Reveal from '../components/Reveal'
@@ -9,8 +9,9 @@ import { useInView } from '../lib/useInView'
 const SERVICES = [
   {
     title: 'Decks, Pergolas & Sun Rooms',
-    img: pergola,
-    alt: 'Custom cedar pergola built by J&T Builders',
+    img: deckRailingSteps,
+    imgPosition: 'object-bottom',
+    alt: 'Deck with cable railings and steps built by J&T Builders',
     items: [
       'Trex, TimberTech & Wolf composite decks',
       '4-season screen rooms & gazebos',
@@ -20,8 +21,8 @@ const SERVICES = [
   },
   {
     title: 'Railings, Stairs & Exteriors',
-    img: exteriorSiding,
-    alt: 'Exterior siding and trim work by J&T Builders',
+    img: pergola,
+    alt: 'Custom cedar pergola built by J&T Builders',
     items: [
       'Custom aluminum & composite railings',
       'Deck stairs with LED lighting',
@@ -95,7 +96,7 @@ export default function Services() {
                   src={service.img}
                   alt={service.alt}
                   loading="lazy"
-                  className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  className={`size-full object-cover transition-transform duration-500 group-hover:scale-105 ${service.imgPosition ?? 'object-center'}`}
                 />
               </div>
               <div className="flex flex-1 flex-col p-6">

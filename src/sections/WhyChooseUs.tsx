@@ -1,8 +1,9 @@
+import owner1 from '../assets/owner-1.webp'
+import owner2 from '../assets/owner-2.webp'
 import {
   ClockIcon,
   HardHatIcon,
   ShieldCheckIcon,
-  UserIcon,
   UsersIcon,
 } from '../components/icons'
 import Reveal from '../components/Reveal'
@@ -30,10 +31,10 @@ const REASONS = [
   },
 ]
 
-// TODO: swap placeholders for the real portraits, names, and titles from the client
+// TODO: swap in the real names and titles from the client (photos are final)
 const OWNERS = [
-  { name: 'Owner Name', role: 'Co-Owner & Builder' },
-  { name: 'Owner Name', role: 'Co-Owner & Builder' },
+  { photo: owner1, name: 'Owner Name', role: 'Co-Owner & Builder' },
+  { photo: owner2, name: 'Owner Name', role: 'Co-Owner & Builder' },
 ]
 
 export default function WhyChooseUs() {
@@ -64,10 +65,12 @@ export default function WhyChooseUs() {
                       className="absolute -top-2 -left-2 h-full w-full rounded-2xl border-2 border-brand-500"
                       aria-hidden="true"
                     />
-                    {/* Placeholder portrait; replace with a real <img> when photos arrive */}
-                    <div className="relative flex aspect-[4/5] items-center justify-center rounded-2xl bg-ink-900">
-                      <UserIcon className="size-16 text-brand-500/25 sm:size-20" />
-                    </div>
+                    <img
+                      src={owner.photo}
+                      alt="J&T Builders co-owner"
+                      loading="lazy"
+                      className="relative aspect-[4/5] w-full rounded-2xl object-cover"
+                    />
                   </div>
                   <figcaption className="mt-4">
                     <p className="font-display text-lg font-bold text-cream-50 uppercase">
