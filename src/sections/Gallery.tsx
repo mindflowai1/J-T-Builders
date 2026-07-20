@@ -2,13 +2,15 @@ import { useEffect, useState } from 'react'
 import heroDeck from '../assets/hero-deck.webp'
 import heroRemodel from '../assets/hero-remodel.webp'
 import galleryConstruction from '../assets/gallery-construction.webp'
-import pergola from '../assets/pergola.webp'
 import craftsman from '../assets/craftsman.webp'
 import galleryStairs from '../assets/gallery-stairs.webp'
 import exteriorSiding from '../assets/exterior-siding.webp'
 import serviceRemodel from '../assets/service-remodel.webp'
 import galleryBasement from '../assets/gallery-basement.webp'
-import bathroom from '../assets/bathroom.webp'
+import litDeckSteps from '../assets/lit-deck-steps.webp'
+import deckRailingSteps from '../assets/deck-railing-steps.webp'
+import cableDeckLounge from '../assets/cable-deck-lounge.webp'
+import cableDeckDining from '../assets/cable-deck-dining.webp'
 import Reveal from '../components/Reveal'
 import {
   ChevronLeftIcon,
@@ -17,13 +19,7 @@ import {
 } from '../components/icons'
 import { useInView } from '../lib/useInView'
 
-const CATEGORIES = [
-  'All',
-  'Decks',
-  'Pergolas',
-  'Railings & Stairs',
-  'Remodeling',
-] as const
+const CATEGORIES = ['All', 'Decks', 'Railings & Stairs', 'Remodeling'] as const
 
 type Category = (typeof CATEGORIES)[number]
 
@@ -31,13 +27,32 @@ const PROJECTS: { img: string; title: string; category: Exclude<Category, 'All'>
   { img: heroDeck, title: 'Composite Deck with Pool Lighting', category: 'Decks' },
   { img: galleryConstruction, title: 'Deck & Hot Tub', category: 'Decks' },
   { img: heroRemodel, title: 'Deck & Hot Tub by Night', category: 'Decks' },
-  { img: pergola, title: 'Cedar Pergola', category: 'Pergolas' },
   { img: craftsman, title: 'Deck Stairs & Railings', category: 'Railings & Stairs' },
   { img: galleryStairs, title: 'Deck Stairs with Lighting', category: 'Railings & Stairs' },
   { img: exteriorSiding, title: 'Deck with Railings & Landscaping', category: 'Railings & Stairs' },
   { img: serviceRemodel, title: 'Open-Concept Kitchen Remodel', category: 'Remodeling' },
   { img: galleryBasement, title: 'Finished Basement', category: 'Remodeling' },
-  { img: bathroom, title: 'Bathroom Remodel', category: 'Remodeling' },
+  {
+    img: litDeckSteps,
+    title: 'Illuminated Deck Steps',
+    category: 'Railings & Stairs',
+  },
+  // Same project, three views: composite deck with white cable railings
+  {
+    img: cableDeckLounge,
+    title: 'Cable Railing Deck, Lounge Area',
+    category: 'Decks',
+  },
+  {
+    img: cableDeckDining,
+    title: 'Cable Railing Deck, Dining Area',
+    category: 'Decks',
+  },
+  {
+    img: deckRailingSteps,
+    title: 'Cable Railing Deck, Steps & Entry',
+    category: 'Railings & Stairs',
+  },
 ]
 
 export default function Gallery() {

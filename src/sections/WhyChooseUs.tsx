@@ -31,10 +31,9 @@ const REASONS = [
   },
 ]
 
-// TODO: swap in the real names and titles from the client (photos are final)
 const OWNERS = [
-  { photo: owner1, name: 'Owner Name', role: 'Co-Owner & Builder' },
-  { photo: owner2, name: 'Owner Name', role: 'Co-Owner & Builder' },
+  { photo: owner2, name: 'JP Ferreira' },
+  { photo: owner1, name: 'Thiago Oliveira' },
 ]
 
 export default function WhyChooseUs() {
@@ -67,7 +66,7 @@ export default function WhyChooseUs() {
                     />
                     <img
                       src={owner.photo}
-                      alt="J&T Builders co-owner"
+                      alt={`${owner.name}, J&T Builders`}
                       loading="lazy"
                       className="relative aspect-[4/5] w-full rounded-2xl object-cover"
                     />
@@ -75,9 +74,6 @@ export default function WhyChooseUs() {
                   <figcaption className="mt-4">
                     <p className="font-display text-lg font-bold text-cream-50 uppercase">
                       {owner.name}
-                    </p>
-                    <p className="text-sm font-bold text-brand-500">
-                      {owner.role}
                     </p>
                   </figcaption>
                 </figure>
