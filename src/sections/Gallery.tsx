@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import heroDeck from '../assets/hero-deck.webp'
-import heroRemodel from '../assets/hero-remodel.webp'
 import galleryConstruction from '../assets/gallery-construction.webp'
 import craftsman from '../assets/craftsman.webp'
 import galleryStairs from '../assets/gallery-stairs.webp'
@@ -11,6 +10,7 @@ import litDeckSteps from '../assets/lit-deck-steps.webp'
 import deckRailingSteps from '../assets/deck-railing-steps.webp'
 import cableDeckLounge from '../assets/cable-deck-lounge.webp'
 import cableDeckDining from '../assets/cable-deck-dining.webp'
+import litRailingsNight from '../assets/lit-railings-night.webp'
 import Reveal from '../components/Reveal'
 import {
   ChevronLeftIcon,
@@ -26,7 +26,7 @@ type Category = (typeof CATEGORIES)[number]
 const PROJECTS: { img: string; title: string; category: Exclude<Category, 'All'> }[] = [
   { img: heroDeck, title: 'Composite Deck with Pool Lighting', category: 'Decks' },
   { img: galleryConstruction, title: 'Deck & Hot Tub', category: 'Decks' },
-  { img: heroRemodel, title: 'Deck & Hot Tub by Night', category: 'Decks' },
+  { img: litRailingsNight, title: 'Deck & Hot Tub by Night', category: 'Decks' },
   { img: craftsman, title: 'Deck Stairs & Railings', category: 'Railings & Stairs' },
   { img: galleryStairs, title: 'Deck Stairs with Lighting', category: 'Railings & Stairs' },
   { img: exteriorSiding, title: 'Deck with Railings & Landscaping', category: 'Railings & Stairs' },

@@ -1,4 +1,4 @@
-import pergola from '../assets/pergola.webp'
+import litRailingsNight from '../assets/lit-railings-night.webp'
 import deckRailingSteps from '../assets/deck-railing-steps.webp'
 import serviceRemodel from '../assets/service-remodel.webp'
 import { ArrowRightIcon, CheckIcon } from '../components/icons'
@@ -21,8 +21,8 @@ const SERVICES = [
   },
   {
     title: 'Railings, Stairs & Exteriors',
-    img: pergola,
-    alt: 'Custom cedar pergola built by J&T Builders',
+    img: litRailingsNight,
+    alt: 'Deck railings with post cap lighting at night by J&T Builders',
     items: [
       'Custom aluminum & composite railings',
       'Deck stairs with LED lighting',
