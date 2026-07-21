@@ -59,10 +59,35 @@ Two channels fire the same event, de-duplicated by a shared `eventId`:
 2. **Conversions API** — `api/meta-event.ts`, a Vercel serverless function. The access
    token is read from the environment and **never reaches the browser**.
 
-`src/lib/tracking.ts` fires both from the quote CTAs (`Lead`) and the mobile call
-button (`Contact`). Note: the quote form itself is a cross-origin Jobber iframe, so the
-actual submit can't be observed from our page; CTA clicks are the closest reliable signal.
-For a true `Lead` on submission, Jobber would need to call a webhook we forward to Meta.
+### Funnel
+
+| Event | Fires when | Reliability |
+|-------|-----------|-------------|
+| `PageView` | any page load | exact |
+| `ViewContent` | a quote CTA is clicked | exact |
+| `InitiateCheckout` | visitor clicks into the form iframe | exact |
+| `Lead` | form appears to be submitted | **heuristic**, see below |
+| `Contact` | mobile call button tapped | exact |
+
+Optimize ad delivery for `Lead`; use `InitiateCheckout` as a backup audience.
+
+### Tracking through the Jobber iframe
+
+The form is cross-origin, so its DOM is unreadable. Two signals are still available,
+both derived from Jobber's own embed snippet (`JobberForm.tsx`):
+
+1. **Form start (exact).** Clicking into the iframe moves focus out of the page, so
+   `window.blur` + `document.activeElement` being our iframe means the visitor started
+   filling it in.
+2. **Submit (heuristic).** Jobber's iframe `postMessage`s its content height to the
+   parent (that's how the snippet auto-resizes it). After a successful submit the form
+   is replaced by a short confirmation screen, so the height collapses. We treat
+   "was tall, went short, after engagement" as a submit, firing once per page.
+
+To make `Lead` exact, wire a **Jobber webhook** (`REQUEST_CREATE`) to a serverless
+endpoint that calls `api/meta-event.ts` server-side. That also lets you pass the real
+email/phone, which materially improves Meta's match quality. Requires a Jobber Developer
+app with webhook scopes on the client's account.
 
 **Environment variables** (Vercel > Settings > Environment Variables, all environments):
 

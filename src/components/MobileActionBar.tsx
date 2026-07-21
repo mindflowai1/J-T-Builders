@@ -34,7 +34,7 @@ export default function MobileActionBar() {
       </a>
       <a
         href="#quote-form"
-        onClick={() => trackEvent('Lead')}
+        onClick={() => trackEvent('ViewContent')}
         className="flex-1 rounded-lg bg-brand-500 px-4 py-3 text-center font-bold text-ink-950 transition-colors active:bg-brand-600"
       >
         Get Free Quote

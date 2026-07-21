@@ -49,7 +49,13 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   // Only allow the events this site actually sends
-  const ALLOWED = ['Lead', 'Contact', 'ViewContent', 'PageView']
+  const ALLOWED = [
+    'ViewContent',
+    'InitiateCheckout',
+    'Lead',
+    'Contact',
+    'PageView',
+  ]
   const eventName = payload.eventName ?? 'Lead'
   if (!ALLOWED.includes(eventName)) {
     return Response.json({ error: 'Unsupported event' }, { status: 400 })

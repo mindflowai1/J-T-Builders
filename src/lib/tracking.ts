@@ -13,7 +13,14 @@ declare global {
   }
 }
 
-type MetaEvent = 'Lead' | 'Contact' | 'ViewContent'
+/**
+ * Funnel, weakest to strongest intent:
+ *   ViewContent      clicked a quote CTA (scrolled to the form)
+ *   InitiateCheckout started filling the form
+ *   Lead             submitted it (the conversion to optimize ads for)
+ *   Contact          tapped call
+ */
+type MetaEvent = 'ViewContent' | 'InitiateCheckout' | 'Lead' | 'Contact'
 
 export function trackEvent(eventName: MetaEvent) {
   const eventId = crypto.randomUUID()
