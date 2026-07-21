@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import logo from '../assets/logo.webp'
 import { NAV_LINKS, SITE } from '../lib/site'
+import { trackEvent } from '../lib/tracking'
 import { CloseIcon, MenuIcon, PhoneIcon } from './icons'
 
 /**
@@ -90,6 +91,7 @@ export default function Header() {
           </a>
           <a
             href="#quote-form"
+            onClick={() => trackEvent('Lead')}
             className="hidden rounded-lg bg-brand-500 px-5 py-2.5 text-sm font-bold text-ink-950 transition-colors hover:bg-brand-400 sm:block"
           >
             Get Your Free Quote
@@ -156,7 +158,10 @@ export default function Header() {
           </a>
           <a
             href="#quote-form"
-            onClick={() => setMenuOpen(false)}
+            onClick={() => {
+              trackEvent('Lead')
+              setMenuOpen(false)
+            }}
             className="block rounded-lg bg-brand-500 px-5 py-3 text-center font-bold text-ink-950 transition-colors hover:bg-brand-400"
           >
             Get Your Free Quote

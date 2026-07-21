@@ -51,6 +51,30 @@ card also links to the standalone form as a backup.
 [`docs/email-notification.html`](docs/email-notification.html) is a legacy n8n email
 template, kept for reference only.
 
+## Meta tracking (Pixel + Conversions API)
+
+Two channels fire the same event, de-duplicated by a shared `eventId`:
+
+1. **Browser Pixel** — snippet in `index.html` (pixel id is public by design).
+2. **Conversions API** — `api/meta-event.ts`, a Vercel serverless function. The access
+   token is read from the environment and **never reaches the browser**.
+
+`src/lib/tracking.ts` fires both from the quote CTAs (`Lead`) and the mobile call
+button (`Contact`). Note: the quote form itself is a cross-origin Jobber iframe, so the
+actual submit can't be observed from our page; CTA clicks are the closest reliable signal.
+For a true `Lead` on submission, Jobber would need to call a webhook we forward to Meta.
+
+**Environment variables** (Vercel > Settings > Environment Variables, all environments):
+
+| Name | Value | Notes |
+|------|-------|-------|
+| `META_PIXEL_ID` | `871472179206738` | Public |
+| `META_CAPI_TOKEN` | `EAA...` | **Secret.** Events Manager > dataset > Settings |
+| `META_TEST_EVENT_CODE` | `TEST12345` | Optional, only while testing. Delete after |
+
+Never prefix these with `VITE_`: Vite inlines `VITE_*` variables into the public bundle.
+See `.env.example`; real `.env` files are gitignored.
+
 ## Pending before launch
 
 - Owners section: swap portrait placeholders in `WhyChooseUs.tsx` for real photos, names,

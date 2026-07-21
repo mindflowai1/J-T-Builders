@@ -7,6 +7,7 @@ import {
   PhoneIcon,
 } from '../components/icons'
 import { SITE } from '../lib/site'
+import { trackEvent } from '../lib/tracking'
 
 const INFO = [
   {
@@ -107,6 +108,7 @@ export default function Contact() {
           </p>
           <a
             href="#quote-form"
+            onClick={() => trackEvent('Lead')}
             className="mt-6 block rounded-lg bg-brand-500 px-6 py-3.5 text-center font-bold text-ink-950 transition-colors hover:bg-brand-400 active:bg-brand-600"
           >
             Go to the Quote Form
