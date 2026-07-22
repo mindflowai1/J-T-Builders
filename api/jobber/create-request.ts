@@ -85,9 +85,10 @@ const REQUEST_CREATE = `
 `
 
 // Fallback when the client already exists: find them by email or phone.
+// searchTerm alone searches names/emails/phones, so no enum arg is needed.
 const CLIENT_SEARCH = `
-  query FindClient($term: String!, $fields: [ClientSearchField!]) {
-    clients(searchTerm: $term, searchFields: $fields, first: 1) {
+  query FindClient($term: String!) {
+    clients(searchTerm: $term, first: 1) {
       nodes { id }
     }
   }
@@ -98,17 +99,22 @@ async function findExistingClientId(
   email: string,
   phone: string,
 ): Promise<string | undefined> {
-  // Prefer email (more unique); fall back to phone digits
-  const attempts: { term: string; fields: string[] }[] = []
-  if (email) attempts.push({ term: email, fields: ['EMAILS'] })
-  if (phone) attempts.push({ term: phone, fields: ['PHONES'] })
-
-  for (const { term, fields } of attempts) {
-    const res = await jobberGraphQL(token, CLIENT_SEARCH, { term, fields })
-    const nodes = (
-      res.data?.clients as { nodes?: { id?: string }[] } | undefined
-    )?.nodes
-    if (nodes?.[0]?.id) return nodes[0].id
+  // Prefer email (more unique); fall back to phone
+  const terms = [email, phone].filter(Boolean)
+  for (const term of terms) {
+    try {
+      const res = await jobberGraphQL(token, CLIENT_SEARCH, { term })
+      if (res.errors) {
+        console.error('client search errors:', JSON.stringify(res.errors))
+        continue
+      }
+      const nodes = (
+        res.data?.clients as { nodes?: { id?: string }[] } | undefined
+      )?.nodes
+      if (nodes?.[0]?.id) return nodes[0].id
+    } catch (err) {
+      console.error('client search threw:', err)
+    }
   }
   return undefined
 }
