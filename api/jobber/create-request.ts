@@ -84,41 +84,6 @@ const REQUEST_CREATE = `
   }
 `
 
-// Fallback when the client already exists: find them by email or phone.
-// searchTerm alone searches names/emails/phones, so no enum arg is needed.
-const CLIENT_SEARCH = `
-  query FindClient($term: String!) {
-    clients(searchTerm: $term, first: 1) {
-      nodes { id }
-    }
-  }
-`
-
-async function findExistingClientId(
-  token: string,
-  email: string,
-  phone: string,
-): Promise<string | undefined> {
-  // Prefer email (more unique); fall back to phone
-  const terms = [email, phone].filter(Boolean)
-  for (const term of terms) {
-    try {
-      const res = await jobberGraphQL(token, CLIENT_SEARCH, { term })
-      if (res.errors) {
-        console.error('client search errors:', JSON.stringify(res.errors))
-        continue
-      }
-      const nodes = (
-        res.data?.clients as { nodes?: { id?: string }[] } | undefined
-      )?.nodes
-      if (nodes?.[0]?.id) return nodes[0].id
-    } catch (err) {
-      console.error('client search threw:', err)
-    }
-  }
-  return undefined
-}
-
 export async function POST(request: Request): Promise<Response> {
   if (
     !process.env.JOBBER_CLIENT_ID ||
@@ -173,12 +138,7 @@ export async function POST(request: Request): Promise<Response> {
       | { client?: { id?: string }; userErrors?: { message: string }[] }
       | undefined
 
-    // If creation failed (most commonly because the client already exists),
-    // look up the existing client by email/phone and reuse it.
-    let clientId = clientData?.client?.id
-    if (!clientId) {
-      clientId = await findExistingClientId(token, email, phone)
-    }
+    const clientId = clientData?.client?.id
     if (!clientId) {
       console.error('clientCreate failed:', JSON.stringify(clientRes))
       return Response.json({ error: 'Could not create client' }, { status: 502 })
