@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import heroPoster from '../assets/hero-poster.webp'
-import JobberForm from '../components/JobberForm'
+import QuoteForm from '../components/QuoteForm'
 import { ArrowRightIcon, CheckIcon, PlayIcon } from '../components/icons'
 
 /** Rotating service tags — from the old site's hero */
@@ -110,24 +110,18 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Quote form card: the official Jobber embed (leads land straight in
-            Jobber), framed in our design. Single instance for the whole page;
-            all "Get Your Free Quote" CTAs anchor here via #quote-form. */}
+        {/* Quote form card: our own glass form, posts to /api/jobber/create-request
+            which creates the client + request in Jobber. All "Get Your Free
+            Quote" CTAs anchor here via #quote-form. */}
         <div
           id="quote-form"
-          className="scroll-mt-24 overflow-hidden rounded-2xl border border-cream-50/20 bg-white/95 shadow-2xl backdrop-blur-xl"
+          className="scroll-mt-24 rounded-2xl border border-cream-50/15 bg-cream-50/10 p-6 shadow-2xl backdrop-blur-xl"
         >
-          <div className="px-6 pt-6">
-            <p className="font-display text-2xl font-bold text-ink-950 uppercase">
-              Get Your <span className="text-brand-500">Free Quote</span>
-            </p>
-            <div className="accent-rule mt-2 mb-3" />
-          </div>
-          {/* Our own scroll container: the embed auto-sizes to full form
-              height inside, so scrolling happens out here, never inside the iframe */}
-          <div className="max-h-[clamp(400px,54vh,600px)] overflow-y-auto px-2 pb-2">
-            <JobberForm />
-          </div>
+          <p className="font-display text-2xl font-bold text-cream-50 uppercase">
+            Get Your <span className="text-brand-500">Free Quote</span>
+          </p>
+          <div className="accent-rule mt-2 mb-5" />
+          <QuoteForm id="hero-quote" variant="glass" />
         </div>
       </div>
 

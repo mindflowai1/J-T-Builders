@@ -1,3 +1,4 @@
+import QuoteForm from '../components/QuoteForm'
 import Reveal from '../components/Reveal'
 import {
   CheckIcon,
@@ -7,7 +8,6 @@ import {
   PhoneIcon,
 } from '../components/icons'
 import { SITE } from '../lib/site'
-import { trackEvent } from '../lib/tracking'
 
 const INFO = [
   {
@@ -95,24 +95,13 @@ export default function Contact() {
           </ul>
         </Reveal>
 
-        {/* Quote card: the Jobber form lives in the hero (#quote-form);
-            this card just points visitors back to it. */}
+        {/* Quote form card — same form as the hero, creates a Jobber request */}
         <Reveal delay={120} className="rounded-2xl bg-white p-6 shadow-2xl sm:p-8">
           <p className="font-display text-2xl font-bold text-ink-950 uppercase">
             Get Your <span className="text-brand-500">Free Quote</span>
           </p>
           <div className="accent-rule mt-2 mb-5" />
-          <p className="leading-relaxed text-ink-700">
-            Fill out the quote form at the top of the page. It only takes a
-            minute, and we'll get back to you within 24 hours.
-          </p>
-          <a
-            href="#quote-form"
-            onClick={() => trackEvent('ViewContent')}
-            className="mt-6 block rounded-lg bg-brand-500 px-6 py-3.5 text-center font-bold text-ink-950 transition-colors hover:bg-brand-400 active:bg-brand-600"
-          >
-            Go to the Quote Form
-          </a>
+          <QuoteForm id="contact-quote" />
         </Reveal>
       </div>
     </section>
