@@ -22,7 +22,10 @@ declare global {
  */
 type MetaEvent = 'ViewContent' | 'InitiateCheckout' | 'Lead' | 'Contact'
 
-export function trackEvent(eventName: MetaEvent) {
+/** Optional contact info to improve Meta's match quality (hashed server-side). */
+type UserData = { email?: string; phone?: string }
+
+export function trackEvent(eventName: MetaEvent, userData?: UserData) {
   const eventId = crypto.randomUUID()
 
   window.fbq?.('track', eventName, {}, { eventID: eventId })
@@ -35,6 +38,8 @@ export function trackEvent(eventName: MetaEvent) {
       eventName,
       eventId,
       eventSourceUrl: window.location.href,
+      email: userData?.email,
+      phone: userData?.phone,
     }),
     keepalive: true,
   }).catch(() => {})

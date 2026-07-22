@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { trackEvent } from '../lib/tracking'
 import { CheckIcon } from './icons'
 
 const SERVICES = [
@@ -58,20 +59,24 @@ export default function QuoteForm({
     }
 
     setStatus('sending')
+    const email = String(data.get('email') || '')
+    const phone = String(data.get('phone') || '')
     try {
       const res = await fetch('/api/jobber/create-request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: data.get('name'),
-          email: data.get('email'),
-          phone: data.get('phone'),
+          email,
+          phone,
           address: data.get('address'),
           service: data.get('service'),
           message: data.get('message') || '',
         }),
       })
       if (!res.ok) throw new Error(`Request failed: ${res.status}`)
+      // Real conversion: fire the Meta Lead event (Pixel + Conversions API)
+      trackEvent('Lead', { email, phone })
       setStatus('sent')
       form.reset()
     } catch {
