@@ -78,8 +78,12 @@ export default function Footer() {
           </p>
           {/* TODO: point to real Privacy / Terms pages once they exist */}
           <div className="flex gap-6">
-            <span className="cursor-default">Privacy Policy</span>
-            <span className="cursor-default">Terms of Service</span>
+            <a href="/privacy.html" className="transition-colors hover:text-brand-400">
+              Privacy Policy
+            </a>
+            <a href="/terms.html" className="transition-colors hover:text-brand-400">
+              Terms of Service
+            </a>
           </div>
         </div>
       </div>
