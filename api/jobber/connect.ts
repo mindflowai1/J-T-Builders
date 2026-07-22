@@ -10,7 +10,11 @@ export async function GET(request: Request): Promise<Response> {
   if (!clientId) {
     return new Response('JOBBER_CLIENT_ID is not set', { status: 500 })
   }
-  const redirectUri = new URL('/api/jobber/callback', request.url).toString()
+  // Fixed so it always matches what's registered on the Jobber app, no matter
+  // whether the site was reached with or without www.
+  const redirectUri =
+    process.env.JOBBER_REDIRECT_URI ||
+    new URL('/api/jobber/callback', request.url).toString()
   const url = new URL(AUTHORIZE_URL)
   url.searchParams.set('client_id', clientId)
   url.searchParams.set('redirect_uri', redirectUri)

@@ -36,7 +36,10 @@ export async function GET(request: Request): Promise<Response> {
     return page('Error', `<h1>Not configured</h1><p>Set JOBBER_CLIENT_ID and JOBBER_CLIENT_SECRET first.</p>`)
   }
 
-  const redirectUri = new URL('/api/jobber/callback', request.url).toString()
+  // Must be byte-for-byte the same redirect_uri used in the connect step.
+  const redirectUri =
+    process.env.JOBBER_REDIRECT_URI ||
+    new URL('/api/jobber/callback', request.url).toString()
 
   const res = await fetch(TOKEN_URL, {
     method: 'POST',
