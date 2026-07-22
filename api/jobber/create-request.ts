@@ -137,7 +137,6 @@ export async function POST(request: Request): Promise<Response> {
     const clientData = clientRes.data?.clientCreate as
       | { client?: { id?: string }; userErrors?: { message: string }[] }
       | undefined
-
     const clientId = clientData?.client?.id
     if (!clientId) {
       console.error('clientCreate failed:', JSON.stringify(clientRes))
