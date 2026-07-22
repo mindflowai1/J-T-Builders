@@ -84,6 +84,35 @@ const REQUEST_CREATE = `
   }
 `
 
+// Fallback when the client already exists: find them by email or phone.
+const CLIENT_SEARCH = `
+  query FindClient($term: String!, $fields: [ClientSearchField!]) {
+    clients(searchTerm: $term, searchFields: $fields, first: 1) {
+      nodes { id }
+    }
+  }
+`
+
+async function findExistingClientId(
+  token: string,
+  email: string,
+  phone: string,
+): Promise<string | undefined> {
+  // Prefer email (more unique); fall back to phone digits
+  const attempts: { term: string; fields: string[] }[] = []
+  if (email) attempts.push({ term: email, fields: ['EMAILS'] })
+  if (phone) attempts.push({ term: phone, fields: ['PHONES'] })
+
+  for (const { term, fields } of attempts) {
+    const res = await jobberGraphQL(token, CLIENT_SEARCH, { term, fields })
+    const nodes = (
+      res.data?.clients as { nodes?: { id?: string }[] } | undefined
+    )?.nodes
+    if (nodes?.[0]?.id) return nodes[0].id
+  }
+  return undefined
+}
+
 export async function POST(request: Request): Promise<Response> {
   if (
     !process.env.JOBBER_CLIENT_ID ||
@@ -137,7 +166,13 @@ export async function POST(request: Request): Promise<Response> {
     const clientData = clientRes.data?.clientCreate as
       | { client?: { id?: string }; userErrors?: { message: string }[] }
       | undefined
-    const clientId = clientData?.client?.id
+
+    // If creation failed (most commonly because the client already exists),
+    // look up the existing client by email/phone and reuse it.
+    let clientId = clientData?.client?.id
+    if (!clientId) {
+      clientId = await findExistingClientId(token, email, phone)
+    }
     if (!clientId) {
       console.error('clientCreate failed:', JSON.stringify(clientRes))
       return Response.json({ error: 'Could not create client' }, { status: 502 })
