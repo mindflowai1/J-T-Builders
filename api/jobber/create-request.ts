@@ -160,7 +160,9 @@ export async function POST(request: Request): Promise<Response> {
     const clientInput: Record<string, unknown> = {
       firstName,
       lastName: lastName || firstName,
-      phones: [{ number: phone, primary: true, smsAllowed: true }],
+      // No smsAllowed: Jobber rejects it for landline numbers ("Landline
+      // numbers cannot receive text messages"), which broke real leads.
+      phones: [{ number: phone, primary: true }],
     }
     if (email) clientInput.emails = [{ address: email, primary: true }]
     if (address) clientInput.properties = [{ address: { street1: address } }]
