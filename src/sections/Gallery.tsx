@@ -1,87 +1,113 @@
 import { useEffect, useState } from 'react'
 import heroDeck from '../assets/hero-deck.webp'
 import galleryConstruction from '../assets/gallery-construction.webp'
+import litRailingsNight from '../assets/lit-railings-night.webp'
 import craftsman from '../assets/craftsman.webp'
 import galleryStairs from '../assets/gallery-stairs.webp'
 import exteriorSiding from '../assets/exterior-siding.webp'
-import serviceRemodel from '../assets/service-remodel.webp'
-import galleryBasement from '../assets/gallery-basement.webp'
 import litDeckSteps from '../assets/lit-deck-steps.webp'
-import deckRailingSteps from '../assets/deck-railing-steps.webp'
-import cableDeckLounge from '../assets/cable-deck-lounge.webp'
-import cableDeckDining from '../assets/cable-deck-dining.webp'
-import litRailingsNight from '../assets/lit-railings-night.webp'
 import Reveal from '../components/Reveal'
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   CloseIcon,
 } from '../components/icons'
-import { useInView } from '../lib/useInView'
 
-const CATEGORIES = ['All', 'Decks', 'Railings & Stairs', 'Remodeling'] as const
+/** All curated portfolio photos, grouped by album folder (see scripts/build-portfolio.mjs) */
+const portfolioFiles = import.meta.glob<{ default: string }>(
+  '../assets/portfolio/*/*.webp',
+  { eager: true },
+)
+const portfolioPhotos: Record<string, string[]> = {}
+for (const [filePath, mod] of Object.entries(portfolioFiles)) {
+  const match = filePath.match(/portfolio\/([^/]+)\/(\d+)\.webp$/)
+  if (!match) continue
+  const [, album, num] = match
+  ;(portfolioPhotos[album] ??= [])[Number(num) - 1] = mod.default
+}
 
-type Category = (typeof CATEGORIES)[number]
+type Album = { title: string; photos: string[]; span?: string }
 
-const PROJECTS: { img: string; title: string; category: Exclude<Category, 'All'> }[] = [
-  { img: heroDeck, title: 'Composite Deck with Pool Lighting', category: 'Decks' },
-  { img: galleryConstruction, title: 'Deck & Hot Tub', category: 'Decks' },
-  { img: litRailingsNight, title: 'Deck & Hot Tub by Night', category: 'Decks' },
-  { img: craftsman, title: 'Deck Stairs & Railings', category: 'Railings & Stairs' },
-  { img: galleryStairs, title: 'Deck Stairs with Lighting', category: 'Railings & Stairs' },
-  { img: exteriorSiding, title: 'Deck with Railings & Landscaping', category: 'Railings & Stairs' },
-  { img: serviceRemodel, title: 'Open-Concept Kitchen Remodel', category: 'Remodeling' },
-  { img: galleryBasement, title: 'Finished Basement', category: 'Remodeling' },
+/** Moves the given 1-based photo number to the front, so it becomes the cover. */
+function withCover(photos: string[], coverNumber: number): string[] {
+  const i = coverNumber - 1
+  if (i <= 0 || i >= photos.length) return photos
+  return [photos[i], ...photos.slice(0, i), ...photos.slice(i + 1)]
+}
+
+/** Mosaic order + slot sizes (lg+ only; mobile/tablet fall back to a simple grid) */
+const ALBUMS: Album[] = [
   {
-    img: litDeckSteps,
-    title: 'Illuminated Deck Steps',
-    category: 'Railings & Stairs',
-  },
-  // Same project, three views: composite deck with white cable railings
-  {
-    img: cableDeckLounge,
-    title: 'Cable Railing Deck, Lounge Area',
-    category: 'Decks',
+    title: 'Cable Railing Deck',
+    photos: portfolioPhotos['cable-rail-deck'],
+    span: 'lg:col-span-2 lg:row-span-2',
   },
   {
-    img: cableDeckDining,
-    title: 'Cable Railing Deck, Dining Area',
-    category: 'Decks',
+    title: 'Major Home Renovation',
+    photos: portfolioPhotos['renovation'],
+    span: 'lg:row-span-2',
   },
   {
-    img: deckRailingSteps,
-    title: 'Cable Railing Deck, Steps & Entry',
-    category: 'Railings & Stairs',
+    title: 'Custom Basement Build-Out',
+    photos: withCover(portfolioPhotos['basement'], 3),
   },
+  {
+    title: 'Signature Deck Builds',
+    photos: [
+      heroDeck,
+      galleryConstruction,
+      litRailingsNight,
+      craftsman,
+      galleryStairs,
+      exteriorSiding,
+      litDeckSteps,
+    ],
+    span: 'lg:col-span-2',
+  },
+  {
+    title: 'New Garage & Carriage House',
+    photos: withCover(portfolioPhotos['garage'], 4),
+  },
+  { title: 'Home Addition', photos: portfolioPhotos['addition'] },
+  {
+    title: 'Porch Demo & Deck Steps',
+    photos: withCover(portfolioPhotos['porch-demo'], 4),
+    span: 'lg:row-span-2',
+  },
+  {
+    title: 'Deck & Pergola',
+    photos: withCover(portfolioPhotos['pergola-deck'], 4),
+  },
+  {
+    title: 'Composite Deck, Black Railings',
+    photos: portfolioPhotos['black-rail-deck'],
+  },
+  { title: 'Elevated Deck & Stairs', photos: portfolioPhotos['elevated-deck'] },
 ]
 
 export default function Gallery() {
-  const [filter, setFilter] = useState<Category>('All')
-  const [lightbox, setLightbox] = useState<number | null>(null)
-  const { ref, inView } = useInView<HTMLDivElement>(0.05, '0px 0px -10% 0px')
+  const [openAlbum, setOpenAlbum] = useState<number | null>(null)
+  const [photoIndex, setPhotoIndex] = useState(0)
 
-  const projects =
-    filter === 'All' ? PROJECTS : PROJECTS.filter((p) => p.category === filter)
+  const album = openAlbum !== null ? ALBUMS[openAlbum] : null
 
   // Lightbox: keyboard nav + body scroll lock
   useEffect(() => {
-    if (lightbox === null) return
+    if (!album) return
     document.body.style.overflow = 'hidden'
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setLightbox(null)
+      if (e.key === 'Escape') setOpenAlbum(null)
       if (e.key === 'ArrowRight')
-        setLightbox((i) => (i === null ? i : (i + 1) % projects.length))
+        setPhotoIndex((i) => (i + 1) % album.photos.length)
       if (e.key === 'ArrowLeft')
-        setLightbox((i) =>
-          i === null ? i : (i - 1 + projects.length) % projects.length,
-        )
+        setPhotoIndex((i) => (i - 1 + album.photos.length) % album.photos.length)
     }
     window.addEventListener('keydown', onKey)
     return () => {
       document.body.style.overflow = ''
       window.removeEventListener('keydown', onKey)
     }
-  }, [lightbox, projects.length])
+  }, [album])
 
   return (
     <section id="projects" className="bg-ink-950 px-4 py-20 sm:px-6 lg:py-28">
@@ -97,118 +123,121 @@ export default function Gallery() {
           </p>
         </Reveal>
 
-        {/* Filter pills — horizontal scroll on mobile */}
-        <div className="scrollbar-none -mx-4 mt-10 flex gap-2.5 overflow-x-auto px-4 sm:-mx-6 sm:px-6 md:mx-0 md:flex-wrap md:px-0">
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat}
-              type="button"
-              onClick={() => setFilter(cat)}
-              aria-pressed={filter === cat}
-              className={`shrink-0 rounded-full px-5 py-2.5 text-sm font-bold whitespace-nowrap transition-colors ${
-                filter === cat
-                  ? 'bg-brand-500 text-ink-950'
-                  : 'bg-ink-900 text-cream-50/70 hover:bg-ink-900/60 hover:text-cream-50'
-              }`}
+        {/* Mosaic: asymmetric slots on lg+, simple grid below */}
+        <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 lg:auto-rows-[240px] lg:grid-cols-4 lg:grid-flow-dense">
+          {ALBUMS.map((a, i) => (
+            <Reveal
+              key={a.title}
+              delay={Math.min(i, 6) * 70}
+              className={`h-full ${a.span ?? ''}`}
             >
-              {cat}
-            </button>
-          ))}
-        </div>
-
-        {/* Grid — items stagger in on section entrance and on every filter change */}
-        <div
-          ref={ref}
-          key={`${filter}-${inView}`}
-          className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3"
-        >
-          {projects.map((project, i) => (
-            <button
-              key={project.title}
-              type="button"
-              onClick={() => setLightbox(i)}
-              style={{ animationDelay: `${i * 70}ms` }}
-              className={`group relative aspect-[4/3] overflow-hidden rounded-xl text-left ${
-                inView ? 'animate-fade-in' : 'opacity-0'
-              }`}
-            >
-              <img
-                src={project.img}
-                alt={`${project.title}, a J&T Builders project`}
-                loading="lazy"
-                className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-ink-950/80 via-transparent to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 p-3 sm:p-4">
-                <p className="font-display text-sm font-bold text-cream-50 uppercase sm:text-base">
-                  {project.title}
-                </p>
-                <p className="text-xs font-semibold text-brand-400">
-                  {project.category}
-                </p>
-              </div>
-            </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setOpenAlbum(i)
+                  setPhotoIndex(0)
+                }}
+                className="group relative block size-full overflow-hidden rounded-xl text-left"
+              >
+                <img
+                  src={a.photos[0]}
+                  alt={`${a.title}, a J&T Builders project`}
+                  loading="lazy"
+                  className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-ink-950/60 via-transparent to-transparent" />
+                <span
+                  aria-hidden="true"
+                  className="text-stroke-brand absolute top-3 left-3 font-display text-3xl font-bold leading-none sm:text-4xl"
+                >
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+              </button>
+            </Reveal>
           ))}
         </div>
       </div>
 
-      {/* Lightbox */}
-      {lightbox !== null && (
+      {/* Album lightbox */}
+      {album && (
         <div
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-ink-950/95 p-4"
+          className="fixed inset-0 z-[60] flex flex-col bg-ink-950/97 p-4"
           role="dialog"
           aria-modal="true"
-          aria-label={projects[lightbox].title}
-          onClick={() => setLightbox(null)}
+          aria-label={album.title}
+          onClick={() => setOpenAlbum(null)}
         >
-          <button
-            type="button"
-            aria-label="Close"
-            onClick={() => setLightbox(null)}
-            className="absolute top-4 right-4 flex size-11 items-center justify-center rounded-full bg-ink-900 text-cream-50 transition-colors hover:bg-brand-500 hover:text-ink-950"
-          >
-            <CloseIcon className="size-5" />
-          </button>
-          <button
-            type="button"
-            aria-label="Previous photo"
-            onClick={(e) => {
-              e.stopPropagation()
-              setLightbox((lightbox - 1 + projects.length) % projects.length)
-            }}
-            className="absolute left-2 flex size-11 items-center justify-center rounded-full bg-ink-900 text-cream-50 transition-colors hover:bg-brand-500 hover:text-ink-950 sm:left-6"
-          >
-            <ChevronLeftIcon className="size-6" />
-          </button>
-          <figure
-            className="max-h-full max-w-4xl"
+          <div className="flex shrink-0 items-center justify-between pb-3">
+            <p className="text-xs text-cream-50/60">
+              {photoIndex + 1} / {album.photos.length}
+            </p>
+            <button
+              type="button"
+              aria-label="Close"
+              onClick={() => setOpenAlbum(null)}
+              className="flex size-11 items-center justify-center rounded-full bg-ink-900 text-cream-50 transition-colors hover:bg-brand-500 hover:text-ink-950"
+            >
+              <CloseIcon className="size-5" />
+            </button>
+          </div>
+
+          <div
+            className="relative flex flex-1 items-center justify-center overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
+            <button
+              type="button"
+              aria-label="Previous photo"
+              onClick={() =>
+                setPhotoIndex(
+                  (photoIndex - 1 + album.photos.length) % album.photos.length,
+                )
+              }
+              className="absolute left-0 flex size-11 items-center justify-center rounded-full bg-ink-900 text-cream-50 transition-colors hover:bg-brand-500 hover:text-ink-950 sm:left-2"
+            >
+              <ChevronLeftIcon className="size-6" />
+            </button>
             <img
-              src={projects[lightbox].img}
-              alt={`${projects[lightbox].title}, a J&T Builders project`}
-              className="max-h-[80vh] w-auto rounded-xl object-contain"
+              src={album.photos[photoIndex]}
+              alt={`${album.title}, photo ${photoIndex + 1}`}
+              className="max-h-full max-w-full rounded-xl object-contain"
             />
-            <figcaption className="mt-3 text-center">
-              <span className="font-display font-bold text-cream-50 uppercase">
-                {projects[lightbox].title}
-              </span>{' '}
-              <span className="text-sm text-cream-50/60">
-                · {projects[lightbox].category}
-              </span>
-            </figcaption>
-          </figure>
-          <button
-            type="button"
-            aria-label="Next photo"
-            onClick={(e) => {
-              e.stopPropagation()
-              setLightbox((lightbox + 1) % projects.length)
-            }}
-            className="absolute right-2 flex size-11 items-center justify-center rounded-full bg-ink-900 text-cream-50 transition-colors hover:bg-brand-500 hover:text-ink-950 sm:right-6"
-          >
-            <ChevronRightIcon className="size-6" />
-          </button>
+            <button
+              type="button"
+              aria-label="Next photo"
+              onClick={() => setPhotoIndex((photoIndex + 1) % album.photos.length)}
+              className="absolute right-0 flex size-11 items-center justify-center rounded-full bg-ink-900 text-cream-50 transition-colors hover:bg-brand-500 hover:text-ink-950 sm:right-2"
+            >
+              <ChevronRightIcon className="size-6" />
+            </button>
+          </div>
+
+          {/* Thumbnail strip */}
+          {album.photos.length > 1 && (
+            <div
+              className="scrollbar-none mt-3 flex shrink-0 gap-2 overflow-x-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {album.photos.map((photo, i) => (
+                <button
+                  key={photo}
+                  type="button"
+                  onClick={() => setPhotoIndex(i)}
+                  aria-label={`Go to photo ${i + 1}`}
+                  aria-current={photoIndex === i}
+                  className={`size-14 shrink-0 overflow-hidden rounded-lg border-2 transition-colors sm:size-16 ${
+                    photoIndex === i ? 'border-brand-500' : 'border-transparent'
+                  }`}
+                >
+                  <img
+                    src={photo}
+                    alt=""
+                    className="size-full object-cover opacity-70 hover:opacity-100"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </section>
