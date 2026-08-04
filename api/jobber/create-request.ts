@@ -84,21 +84,6 @@ const REQUEST_CREATE = `
   }
 `
 
-// The customer's description goes here instead of the title: the admin
-// reported the whole message was flooding the request header.
-// Schema (verified in the API playground):
-//   requestCreateNote(requestId: EncodedId!, input: RequestCreateNoteInput!)
-//   RequestCreateNoteInput.message: String
-// Only userErrors is selected back, since RequestNote's own fields weren't
-// verified and an unknown field name would make Jobber reject the query.
-const REQUEST_NOTE_CREATE = `
-  mutation CreateRequestNote($requestId: EncodedId!, $input: RequestCreateNoteInput!) {
-    requestCreateNote(requestId: $requestId, input: $input) {
-      userErrors { message }
-    }
-  }
-`
-
 // Fallback when the client already exists (recurring client, or a repeat
 // submission). searchTerm alone searches names/emails/phones.
 const CLIENT_SEARCH = `
@@ -199,48 +184,20 @@ export async function POST(request: Request): Promise<Response> {
       return Response.json({ error: 'Could not create client' }, { status: 502 })
     }
 
-    // 2. Create the request tied to that client. The title is just the service
-    // so Jobber's header stays readable; the description goes to a note below.
+    // 2. Create the request tied to that client
+    const title = message ? `${service} — ${message}` : service
     const requestRes = await jobberGraphQL(token, REQUEST_CREATE, {
-      input: { clientId, title: service },
+      input: { clientId, title },
     })
     const requestData = requestRes.data?.requestCreate as
       | { request?: { id?: string }; userErrors?: { message: string }[] }
       | undefined
-    const requestId = requestData?.request?.id
-    if (!requestId) {
+    if (!requestData?.request?.id) {
       console.error('requestCreate failed:', JSON.stringify(requestRes))
       return Response.json(
         { error: 'Could not create request' },
         { status: 502 },
       )
-    }
-
-    // 3. Attach the description as a note. Deliberately a separate call made
-    // after the request already exists, and non-fatal: if it fails the lead is
-    // still saved, and the text is logged so nothing is lost silently.
-    if (message) {
-      try {
-        const noteRes = await jobberGraphQL(token, REQUEST_NOTE_CREATE, {
-          requestId,
-          input: { message },
-        })
-        if (noteRes.errors) {
-          console.error(
-            `requestCreateNote failed for ${requestId}:`,
-            JSON.stringify(noteRes.errors),
-            '| description was:',
-            message,
-          )
-        }
-      } catch (err) {
-        console.error(
-          `requestCreateNote threw for ${requestId}:`,
-          err,
-          '| description was:',
-          message,
-        )
-      }
     }
 
     return Response.json({ ok: true })
