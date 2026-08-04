@@ -69,10 +69,7 @@ async function jobberGraphQL(
 const CLIENT_CREATE = `
   mutation CreateClient($input: ClientCreateInput!) {
     clientCreate(input: $input) {
-      client {
-        id
-        properties(first: 1) { nodes { id } }
-      }
+      client { id }
       userErrors { message }
     }
   }
@@ -87,37 +84,21 @@ const REQUEST_CREATE = `
   }
 `
 
-// The customer's own description goes here instead of the title, which the
-// admin reported was being flooded with the whole message.
-const REQUEST_NOTE_CREATE = `
-  mutation CreateRequestNote($input: RequestCreateNoteInput!) {
-    requestCreateNote(input: $input) {
-      requestNote { id }
-      userErrors { message }
-    }
-  }
-`
-
 // Fallback when the client already exists (recurring client, or a repeat
 // submission). searchTerm alone searches names/emails/phones.
 const CLIENT_SEARCH = `
   query FindClient($term: String!) {
     clients(searchTerm: $term, first: 1) {
-      nodes {
-        id
-        properties(first: 1) { nodes { id } }
-      }
+      nodes { id }
     }
   }
 `
 
-type FoundClient = { id: string; propertyId?: string }
-
-async function findExistingClient(
+async function findExistingClientId(
   token: string,
   email: string,
   phone: string,
-): Promise<FoundClient | undefined> {
+): Promise<string | undefined> {
   const terms = [email, phone].filter(Boolean)
   for (const term of terms) {
     try {
@@ -126,14 +107,10 @@ async function findExistingClient(
         console.error('client search errors:', JSON.stringify(res.errors))
         continue
       }
-      const node = (
-        res.data?.clients as
-          | { nodes?: { id?: string; properties?: { nodes?: { id?: string }[] } }[] }
-          | undefined
-      )?.nodes?.[0]
-      if (node?.id) {
-        return { id: node.id, propertyId: node.properties?.nodes?.[0]?.id }
-      }
+      const nodes = (
+        res.data?.clients as { nodes?: { id?: string }[] } | undefined
+      )?.nodes
+      if (nodes?.[0]?.id) return nodes[0].id
     } catch (err) {
       console.error('client search threw:', err)
     }
@@ -194,59 +171,33 @@ export async function POST(request: Request): Promise<Response> {
       input: clientInput,
     })
     const clientData = clientRes.data?.clientCreate as
-      | {
-          client?: { id?: string; properties?: { nodes?: { id?: string }[] } }
-          userErrors?: { message: string }[]
-        }
+      | { client?: { id?: string }; userErrors?: { message: string }[] }
       | undefined
 
     // If creation failed (most commonly the client already exists), reuse them.
     let clientId = clientData?.client?.id
-    let propertyId = clientData?.client?.properties?.nodes?.[0]?.id
     if (!clientId) {
       console.error('clientCreate failed:', JSON.stringify(clientRes))
-      const existing = await findExistingClient(token, email, phone)
-      clientId = existing?.id
-      propertyId = existing?.propertyId
+      clientId = await findExistingClientId(token, email, phone)
     }
     if (!clientId) {
       return Response.json({ error: 'Could not create client' }, { status: 502 })
     }
 
-    // 2. Create the request tied to that client.
-    // Title stays short (just the service) so Jobber's header reads cleanly;
-    // the customer's description goes to a note, not the title.
-    const requestInput: Record<string, unknown> = { clientId, title: service }
-    if (propertyId) requestInput.propertyId = propertyId
-
+    // 2. Create the request tied to that client
+    const title = message ? `${service} — ${message}` : service
     const requestRes = await jobberGraphQL(token, REQUEST_CREATE, {
-      input: requestInput,
+      input: { clientId, title },
     })
     const requestData = requestRes.data?.requestCreate as
       | { request?: { id?: string }; userErrors?: { message: string }[] }
       | undefined
-    const requestId = requestData?.request?.id
-    if (!requestId) {
+    if (!requestData?.request?.id) {
       console.error('requestCreate failed:', JSON.stringify(requestRes))
       return Response.json(
         { error: 'Could not create request' },
         { status: 502 },
       )
-    }
-
-    // 3. Attach the customer's description as a note. Best-effort: the request
-    // already exists, so never fail the submission over this.
-    if (message) {
-      try {
-        const noteRes = await jobberGraphQL(token, REQUEST_NOTE_CREATE, {
-          input: { requestId, message },
-        })
-        if (noteRes.errors) {
-          console.error('requestCreateNote errors:', JSON.stringify(noteRes.errors))
-        }
-      } catch (err) {
-        console.error('requestCreateNote threw:', err)
-      }
     }
 
     return Response.json({ ok: true })
