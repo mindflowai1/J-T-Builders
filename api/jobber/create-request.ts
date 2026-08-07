@@ -200,14 +200,69 @@ export async function POST(request: Request): Promise<Response> {
     }
 
     // 2. Create the request tied to that client. The title is just the service
-    // so Jobber's header stays readable; the description goes to a note below.
-    const requestRes = await jobberGraphQL(token, REQUEST_CREATE, {
-      input: { clientId, title: service },
-    })
-    const requestData = requestRes.data?.requestCreate as
-      | { request?: { id?: string }; userErrors?: { message: string }[] }
-      | undefined
-    const requestId = requestData?.request?.id
+    // so Jobber's header stays readable.
+    const baseInput: Record<string, unknown> = { clientId, title: service }
+
+    // The admin wants the description under "Service details" in the request's
+    // Overview, not only as a note. requestDetails describes a question/answer
+    // form we provide; mirroring her form's labels so it reads identically.
+    // Schema (verified in the playground):
+    //   RequestDetailsInput.form: FormInput!
+    //   FormInput.sections: [FormSectionInput!]!
+    //   FormSectionInput { label: String!, items: [FormItemInput!]! }
+    //   FormItemInput { label: String!, answerText: String }
+    const detailedInput = message
+      ? {
+          ...baseInput,
+          requestDetails: {
+            form: {
+              sections: [
+                {
+                  label: 'Service details',
+                  items: [
+                    {
+                      label: 'Please provide as much information as you can',
+                      answerText: message,
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        }
+      : baseInput
+
+    // Try with the form details first. If Jobber rejects them for any reason,
+    // fall back to the plain input so the lead is never lost: GraphQL mutations
+    // are atomic, so a failed attempt created nothing and retrying is safe.
+    let requestRes: Awaited<ReturnType<typeof jobberGraphQL>> | undefined
+    try {
+      requestRes = await jobberGraphQL(token, REQUEST_CREATE, {
+        input: detailedInput,
+      })
+    } catch (err) {
+      console.error('requestCreate with requestDetails threw:', err)
+    }
+
+    const idFrom = (res?: { data?: Record<string, unknown> }) =>
+      (
+        res?.data?.requestCreate as
+          | { request?: { id?: string } }
+          | undefined
+      )?.request?.id
+
+    let requestId = idFrom(requestRes)
+    if (!requestId && detailedInput !== baseInput) {
+      console.error(
+        'requestCreate with requestDetails failed, retrying without it:',
+        JSON.stringify(requestRes),
+      )
+      requestRes = await jobberGraphQL(token, REQUEST_CREATE, {
+        input: baseInput,
+      })
+      requestId = idFrom(requestRes)
+    }
+
     if (!requestId) {
       console.error('requestCreate failed:', JSON.stringify(requestRes))
       return Response.json(
