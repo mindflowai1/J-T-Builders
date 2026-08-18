@@ -2,8 +2,9 @@
  * Creates a Jobber work request from the site's own quote form.
  *
  * Flow (Jobber requires a client before a request):
- *   1. clientCreate  — name, email, phone, property address
- *   2. requestCreate — clientId + title (the requested service)
+ *   1. clientCreate      — name, email, phone, property address
+ *   2. requestCreate     — clientId + title (the requested service)
+ *   3. requestCreateNote — the customer's description, kept editable by staff
  *
  * Runs on Vercel. Credentials live only in the environment:
  *   JOBBER_CLIENT_ID, JOBBER_CLIENT_SECRET  (from the Developer Center app)
@@ -84,8 +85,12 @@ const REQUEST_CREATE = `
   }
 `
 
-// The customer's description goes here instead of the title: the admin
-// reported the whole message was flooding the request header.
+// The customer's description lives here, and only here. It is deliberately a
+// note rather than the title (which flooded the request header) or
+// requestDetails: Jobber treats requestDetails as form answers owned by the
+// integration that created them and refuses to let staff edit them
+// ("J&T Builders Website request details cannot be modified"). Notes stay
+// editable — the schema exposes RequestEditNoteInput.message for exactly that.
 // Schema (verified in the API playground):
 //   requestCreateNote(requestId: EncodedId!, input: RequestCreateNoteInput!)
 //   RequestCreateNoteInput.message: String
@@ -200,68 +205,16 @@ export async function POST(request: Request): Promise<Response> {
     }
 
     // 2. Create the request tied to that client. The title is just the service
-    // so Jobber's header stays readable.
-    const baseInput: Record<string, unknown> = { clientId, title: service }
+    // so Jobber's header stays readable; the description follows as a note.
+    const requestRes = await jobberGraphQL(token, REQUEST_CREATE, {
+      input: { clientId, title: service },
+    })
 
-    // The admin wants the description under "Service details" in the request's
-    // Overview, not only as a note. requestDetails describes a question/answer
-    // form we provide; mirroring her form's labels so it reads identically.
-    // Schema (verified in the playground):
-    //   RequestDetailsInput.form: FormInput!
-    //   FormInput.sections: [FormSectionInput!]!
-    //   FormSectionInput { label: String!, items: [FormItemInput!]! }
-    //   FormItemInput { label: String!, answerText: String }
-    const detailedInput = message
-      ? {
-          ...baseInput,
-          requestDetails: {
-            form: {
-              sections: [
-                {
-                  label: 'Service details',
-                  items: [
-                    {
-                      label: 'Please provide as much information as you can',
-                      answerText: message,
-                    },
-                  ],
-                },
-              ],
-            },
-          },
-        }
-      : baseInput
-
-    // Try with the form details first. If Jobber rejects them for any reason,
-    // fall back to the plain input so the lead is never lost: GraphQL mutations
-    // are atomic, so a failed attempt created nothing and retrying is safe.
-    let requestRes: Awaited<ReturnType<typeof jobberGraphQL>> | undefined
-    try {
-      requestRes = await jobberGraphQL(token, REQUEST_CREATE, {
-        input: detailedInput,
-      })
-    } catch (err) {
-      console.error('requestCreate with requestDetails threw:', err)
-    }
-
-    const idFrom = (res?: { data?: Record<string, unknown> }) =>
-      (
-        res?.data?.requestCreate as
-          | { request?: { id?: string } }
-          | undefined
-      )?.request?.id
-
-    let requestId = idFrom(requestRes)
-    if (!requestId && detailedInput !== baseInput) {
-      console.error(
-        'requestCreate with requestDetails failed, retrying without it:',
-        JSON.stringify(requestRes),
-      )
-      requestRes = await jobberGraphQL(token, REQUEST_CREATE, {
-        input: baseInput,
-      })
-      requestId = idFrom(requestRes)
-    }
+    const requestId = (
+      requestRes.data?.requestCreate as
+        | { request?: { id?: string } }
+        | undefined
+    )?.request?.id
 
     if (!requestId) {
       console.error('requestCreate failed:', JSON.stringify(requestRes))
@@ -271,9 +224,10 @@ export async function POST(request: Request): Promise<Response> {
       )
     }
 
-    // 3. Attach the description as a note. Deliberately a separate call made
-    // after the request already exists, and non-fatal: if it fails the lead is
-    // still saved, and the text is logged so nothing is lost silently.
+    // 3. Attach the description as a note — the only place it is stored, and
+    // the one the admin can edit. Still non-fatal: a lead with a request but no
+    // note beats losing the lead entirely, so on failure the text is logged
+    // rather than dropped silently.
     if (message) {
       try {
         const noteRes = await jobberGraphQL(token, REQUEST_NOTE_CREATE, {
