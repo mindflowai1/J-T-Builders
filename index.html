@@ -36,6 +36,13 @@
       fbq('init', '871472179206738')
       fbq('track', 'PageView')
     </script>
+    <!-- End Meta Pixel Code -->
+  </head>
+  <body>
+    <!-- Meta Pixel fallback for visitors without JavaScript. Lives in <body>,
+         not <head>: an <img> inside a <head> <noscript> is invalid HTML, and
+         browsers may drop it during error recovery — which would silently kill
+         the very fallback it exists to provide. -->
     <noscript
       ><img
         height="1"
@@ -44,9 +51,6 @@
         alt=""
         src="https://www.facebook.com/tr?id=871472179206738&ev=PageView&noscript=1"
     /></noscript>
-    <!-- End Meta Pixel Code -->
-  </head>
-  <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
