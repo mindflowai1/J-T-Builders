@@ -1,4 +1,12 @@
 {
+  // Vercel type-checks the api/ functions against THIS file, not
+  // tsconfig.api.json, so the Node types have to be reachable from here or
+  // every process.env reference fails to compile with TS2591. "files": []
+  // keeps `tsc -b` delegating to the referenced projects as before.
+  "compilerOptions": {
+    "types": ["node"],
+    "skipLibCheck": true
+  },
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },
