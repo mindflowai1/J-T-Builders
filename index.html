@@ -49,7 +49,10 @@
         dataLayer.push(arguments)
       }
       gtag('js', new Date())
+      // Two properties share this one loader: Google Ads (conversions) and
+      // GA4 (analytics). Loading gtag.js twice would double-count both.
       gtag('config', 'AW-17629581967')
+      gtag('config', 'G-5MTV7T3EMC')
     </script>
     <!-- End Google tag -->
 </head>
