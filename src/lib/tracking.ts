@@ -10,7 +10,19 @@
 declare global {
   interface Window {
     fbq?: (...args: unknown[]) => void
+    gtag?: (...args: unknown[]) => void
   }
+}
+
+/** Google Ads conversion action for "Submit lead form" (tag lives in index.html) */
+const GOOGLE_CONVERSION = 'AW-17629581967/QjapCJH86fUbEI-luNZB'
+
+/**
+ * Google Ads conversion. Fired on confirmed form submit instead of from a
+ * thank-you page: no page to land on directly, so no inflated conversions.
+ */
+export function trackGoogleConversion() {
+  window.gtag?.('event', 'conversion', { send_to: GOOGLE_CONVERSION })
 }
 
 /**

@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { trackEvent } from '../lib/tracking'
+import { trackEvent, trackGoogleConversion } from '../lib/tracking'
 import { CheckIcon } from './icons'
 
 const SERVICES = [
@@ -77,6 +77,7 @@ export default function QuoteForm({
       if (!res.ok) throw new Error(`Request failed: ${res.status}`)
       // Real conversion: fire the Meta Lead event (Pixel + Conversions API)
       trackEvent('Lead', { email, phone })
+      trackGoogleConversion()
       setStatus('sent')
       form.reset()
     } catch {
