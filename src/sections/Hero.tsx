@@ -7,7 +7,7 @@ import { ArrowRightIcon, CheckIcon, PlayIcon } from '../components/icons'
 const TAGS = ['Custom Deck Building', 'Decks & Pergolas', 'Railings & Exteriors']
 
 const TRUST_ITEMS = [
-  '24+ Years of Excellence',
+  '25+ Years of Excellence',
   '489+ Projects Completed',
   'OSHA Certified',
   'Licensed & Insured',

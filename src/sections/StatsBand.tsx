@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useInView } from '../lib/useInView'
 
 const STATS = [
-  { value: 24, suffix: '+', label: 'Years of Excellence' },
+  { value: 25, suffix: '+', label: 'Years of Excellence' },
   { value: 489, suffix: '+', label: 'Projects Completed' },
   { value: 2, suffix: 'nd', label: 'Generation Builders' },
 ]
