@@ -1,4 +1,4 @@
-import QuoteForm from '../components/QuoteForm'
+import { useQuoteModal } from '../lib/useQuoteModal'
 import Reveal from '../components/Reveal'
 import {
   CheckIcon,
@@ -41,6 +41,8 @@ const REASSURANCE = [
 ]
 
 export default function Contact() {
+  const openQuote = useQuoteModal()
+
   return (
     <section id="contact" className="bg-ink-950 px-4 py-20 sm:px-6 lg:py-28">
       <div className="mx-auto grid max-w-7xl items-start gap-12 lg:grid-cols-2 lg:gap-16">
@@ -52,9 +54,9 @@ export default function Contact() {
             Start Your <span className="text-brand-500">Project Today</span>
           </h2>
           <p className="mt-4 max-w-xl text-lg leading-relaxed text-cream-50/80">
-            Fill out the form and we'll get back to you within 24 hours with a
-            free, no-obligation estimate, backed by our 5-year workmanship
-            warranty.
+            Tell us about your project and we'll get back to you within 24 hours
+            with a free, no-obligation estimate, backed by our 5-year
+            workmanship warranty.
           </p>
 
           <ul className="mt-9 space-y-5">
@@ -95,13 +97,43 @@ export default function Contact() {
           </ul>
         </Reveal>
 
-        {/* Quote form card — same form as the hero, creates a Jobber request */}
+        {/* Quote card — opens the same Jobber modal as every other CTA */}
         <Reveal delay={120} className="rounded-2xl bg-white p-6 shadow-2xl sm:p-8">
           <p className="font-display text-2xl font-bold text-ink-950 uppercase">
             Get Your <span className="text-brand-500">Free Quote</span>
           </p>
-          <div className="accent-rule mt-2 mb-5" />
-          <QuoteForm id="contact-quote" />
+          <div className="accent-rule mt-2 mb-4" />
+          <p className="text-ink-700">
+            A few quick questions about your project — that's all we need to put
+            an estimate together.
+          </p>
+          <ul className="mt-5 space-y-2.5">
+            {REASSURANCE.map((item) => (
+              <li
+                key={item}
+                className="flex items-center gap-2.5 text-sm font-semibold text-ink-700"
+              >
+                <CheckIcon className="size-4 shrink-0 text-brand-500" />
+                {item}
+              </li>
+            ))}
+          </ul>
+          <button
+            type="button"
+            onClick={openQuote}
+            className="mt-6 w-full rounded-lg bg-brand-500 px-6 py-3.5 font-bold text-ink-950 transition-colors hover:bg-brand-400 active:bg-brand-600"
+          >
+            Get My Free Quote
+          </button>
+          <p className="mt-3 text-center text-xs text-ink-500">
+            Or call us at{' '}
+            <a
+              href={SITE.phoneHref}
+              className="font-semibold text-ink-700 underline underline-offset-2 hover:text-brand-600"
+            >
+              {SITE.phone}
+            </a>
+          </p>
         </Reveal>
       </div>
     </section>

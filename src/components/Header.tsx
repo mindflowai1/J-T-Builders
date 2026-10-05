@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import logo from '../assets/logo.webp'
 import { NAV_LINKS, SITE } from '../lib/site'
-import { trackEvent } from '../lib/tracking'
 import { CloseIcon, MenuIcon, PhoneIcon } from './icons'
+import { useQuoteModal } from '../lib/useQuoteModal'
 
 /**
  * Badge treatment: at the top of the page the shield hangs large below the
@@ -27,6 +27,7 @@ function Logo({ scrolled }: { scrolled: boolean }) {
 }
 
 export default function Header() {
+  const openQuote = useQuoteModal()
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
 
@@ -89,13 +90,13 @@ export default function Header() {
           >
             <PhoneIcon className="size-5" />
           </a>
-          <a
-            href="#quote-form"
-            onClick={() => trackEvent('ViewContent')}
+          <button
+            type="button"
+            onClick={openQuote}
             className="hidden rounded-lg bg-brand-500 px-5 py-2.5 text-sm font-bold text-ink-950 transition-colors hover:bg-brand-400 sm:block"
           >
             Get Your Free Quote
-          </a>
+          </button>
           <button
             type="button"
             onClick={() => setMenuOpen(true)}
@@ -156,16 +157,16 @@ export default function Header() {
             <PhoneIcon className="size-4" />
             {SITE.phone}
           </a>
-          <a
-            href="#quote-form"
+          <button
+            type="button"
             onClick={() => {
-              trackEvent('ViewContent')
               setMenuOpen(false)
+              openQuote()
             }}
-            className="block rounded-lg bg-brand-500 px-5 py-3 text-center font-bold text-ink-950 transition-colors hover:bg-brand-400"
+            className="block w-full rounded-lg bg-brand-500 px-5 py-3 text-center font-bold text-ink-950 transition-colors hover:bg-brand-400"
           >
             Get Your Free Quote
-          </a>
+          </button>
         </div>
       </div>
     </header>

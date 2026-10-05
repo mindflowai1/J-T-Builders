@@ -38,16 +38,27 @@ Vercel auto-detects the Vite preset, no extra configuration needed:
 
 ## Lead capture (all Jobber, no middleware)
 
-The quote form is the official Jobber work-request embed (`src/components/JobberForm.tsx`);
-leads land directly in the client's Jobber account. Fields and colors are managed in Jobber
-(form builder, form id `4882418`, and Client Hub branding), not in this codebase.
+The quote form is the official Jobber work-request embed, shown in a modal
+(`src/components/QuoteModal.tsx`). Leads land directly in the client's Jobber account —
+no API call, no OAuth, no credentials to keep alive on our side. Fields and colors are
+managed in Jobber (form builder, form id `4882418`, and Client Hub branding), not in this
+codebase.
 
-The snippet only supports one embed instance per page (and the form only renders correctly
-through the official snippet, since the form page depends on the snippet's resizer). The
-single embed lives in the hero card (`#quote-form`) on every breakpoint, inside our own
-scroll container (the embed auto-sizes to the full form height). Every "Get Your Free
-Quote" CTA (header, mobile action bar, contact card) anchors to `#quote-form`; the contact
-card also links to the standalone form as a backup.
+The snippet only supports one embed instance per page, and the form only renders correctly
+through the official snippet, since the form page depends on the snippet's resizer. So a
+single embed lives inside one modal that every "Get Your Free Quote" CTA opens (header,
+mobile menu, mobile action bar, hero card, contact card) via the `useQuoteModal` hook in
+`src/lib/useQuoteModal.ts`.
+
+The embed mounts on the **first** open, so the iframe measures itself while visible, and
+then stays mounted. Closing hides the modal with `invisible` rather than `display:none`,
+which preserves the iframe's measured height so reopening is instant and correctly sized.
+
+`api/jobber/*` is the previous approach — a custom form posting to a serverless endpoint
+that created the client and request over Jobber's GraphQL API. It was abandoned because
+the OAuth credentials are fragile: regenerating the app's client secret in the Developer
+Center silently revokes every refresh token, and leads then fail with a 500 that nobody
+sees. The files are kept for reference but nothing on the site calls them.
 [`docs/email-notification.html`](docs/email-notification.html) is a legacy n8n email
 template, kept for reference only.
 
@@ -64,7 +75,7 @@ Two channels fire the same event, de-duplicated by a shared `eventId`:
 | Event | Fires when | Reliability |
 |-------|-----------|-------------|
 | `PageView` | any page load | exact |
-| `ViewContent` | a quote CTA is clicked | exact |
+| `ViewContent` | a quote CTA opens the modal | exact |
 | `InitiateCheckout` | visitor clicks into the form iframe | exact |
 | `Lead` | form appears to be submitted | **heuristic**, see below |
 | `Contact` | mobile call button tapped | exact |
@@ -74,7 +85,7 @@ Optimize ad delivery for `Lead`; use `InitiateCheckout` as a backup audience.
 ### Tracking through the Jobber iframe
 
 The form is cross-origin, so its DOM is unreadable. Two signals are still available,
-both derived from Jobber's own embed snippet (`JobberForm.tsx`):
+both derived from Jobber's own embed snippet (`QuoteModal.tsx`):
 
 1. **Form start (exact).** Clicking into the iframe moves focus out of the page, so
    `window.blur` + `document.activeElement` being our iframe means the visitor started

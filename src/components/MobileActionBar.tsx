@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react'
 import { SITE } from '../lib/site'
 import { trackEvent } from '../lib/tracking'
 import { PhoneIcon } from './icons'
+import { useQuoteModal } from '../lib/useQuoteModal'
 
 /**
  * Mobile-only sticky bottom bar — thumb-reach Call / Quote actions.
  * Slides up once the user scrolls past the hero.
  */
 export default function MobileActionBar() {
+  const openQuote = useQuoteModal()
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
@@ -32,13 +34,13 @@ export default function MobileActionBar() {
         <PhoneIcon className="size-4" />
         Call Us
       </a>
-      <a
-        href="#quote-form"
-        onClick={() => trackEvent('ViewContent')}
+      <button
+        type="button"
+        onClick={openQuote}
         className="flex-1 rounded-lg bg-brand-500 px-4 py-3 text-center font-bold text-ink-950 transition-colors active:bg-brand-600"
       >
         Get Free Quote
-      </a>
+      </button>
     </div>
   )
 }

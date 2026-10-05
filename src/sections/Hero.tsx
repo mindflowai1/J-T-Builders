@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import heroPoster from '../assets/hero-poster.webp'
-import QuoteForm from '../components/QuoteForm'
+import { useQuoteModal } from '../lib/useQuoteModal'
 import { ArrowRightIcon, CheckIcon, PlayIcon } from '../components/icons'
 
 /** Rotating service tags — from the old site's hero */
@@ -14,7 +14,15 @@ const TRUST_ITEMS = [
   '5-Year Warranty',
 ]
 
+/** Sold in the quote card, before the visitor commits to opening the form */
+const QUOTE_PROMISES = [
+  'Free, no-obligation estimate',
+  'We reply within 24 hours',
+  '5-year workmanship warranty',
+]
+
 export default function Hero() {
+  const openQuote = useQuoteModal()
   const [tagIndex, setTagIndex] = useState(0)
   const videoRef = useRef<HTMLVideoElement>(null)
   // iOS blocks autoplay in Low Power Mode etc. — poster stays, tap starts playback
@@ -110,18 +118,38 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Quote form card: our own glass form, posts to /api/jobber/create-request
-            which creates the client + request in Jobber. All "Get Your Free
-            Quote" CTAs anchor here via #quote-form. */}
-        <div
-          id="quote-form"
-          className="scroll-mt-24 rounded-2xl border border-cream-50/15 bg-cream-50/10 p-6 shadow-2xl backdrop-blur-xl"
-        >
+        {/* Quote card — opens the Jobber form in a modal, like every other
+            "Get Your Free Quote" CTA on the page. */}
+        <div className="rounded-2xl border border-cream-50/15 bg-cream-50/10 p-6 shadow-2xl backdrop-blur-xl">
           <p className="font-display text-2xl font-bold text-cream-50 uppercase">
             Get Your <span className="text-brand-500">Free Quote</span>
           </p>
-          <div className="accent-rule mt-2 mb-5" />
-          <QuoteForm id="hero-quote" variant="glass" />
+          <div className="accent-rule mt-2 mb-4" />
+          <p className="text-cream-50/85">
+            Tell us about your project and we'll come back with a free estimate,
+            no strings attached.
+          </p>
+          <ul className="mt-5 space-y-2.5">
+            {QUOTE_PROMISES.map((item) => (
+              <li
+                key={item}
+                className="flex items-center gap-2.5 text-sm font-semibold text-cream-50/90"
+              >
+                <CheckIcon className="size-4 shrink-0 text-brand-500" />
+                {item}
+              </li>
+            ))}
+          </ul>
+          <button
+            type="button"
+            onClick={openQuote}
+            className="mt-6 w-full rounded-lg bg-brand-500 px-6 py-3.5 font-bold text-ink-950 transition-colors hover:bg-brand-400 active:bg-brand-600"
+          >
+            Get My Free Quote
+          </button>
+          <p className="mt-3 text-center text-xs text-cream-50/70">
+            Takes about a minute.
+          </p>
         </div>
       </div>
 
