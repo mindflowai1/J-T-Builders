@@ -7,7 +7,7 @@ import {
 } from 'react'
 import { createPortal } from 'react-dom'
 import { trackEvent, trackGoogleConversion } from '../lib/tracking'
-import { QuoteModalContext } from '../lib/useQuoteModal'
+import { OPEN_QUOTE_EVENT } from '../lib/useQuoteModal'
 import { CloseIcon } from './icons'
 
 /**
@@ -123,10 +123,18 @@ function JobberEmbed() {
   return <div ref={containerRef} id={CLIENTHUB_ID} />
 }
 
-export function QuoteModalProvider({ children }: { children: ReactNode }) {
+/**
+ * The single quote modal for the page. Opens on the OPEN_QUOTE_EVENT window
+ * event (see lib/useQuoteModal) or a click on any `[data-open-quote]` element,
+ * which lets static blog HTML trigger it without being React.
+ */
+export function QuoteModalProvider({ children }: { children?: ReactNode }) {
   const [open, setOpen] = useState(false)
   // Mount the embed on first open and keep it: the snippet runs only once.
   const [mounted, setMounted] = useState(false)
+  // The portal targets document.body, which doesn't exist during the static
+  // render of blog pages; render it only once we're in the browser.
+  const [isClient, setIsClient] = useState(false)
   const closeRef = useRef<HTMLButtonElement>(null)
   const lastFocused = useRef<HTMLElement | null>(null)
 
@@ -138,6 +146,22 @@ export function QuoteModalProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const closeModal = useCallback(() => setOpen(false), [])
+
+  useEffect(() => {
+    setIsClient(true)
+    const onClick = (e: MouseEvent) => {
+      if ((e.target as Element | null)?.closest?.('[data-open-quote]')) {
+        e.preventDefault()
+        openModal()
+      }
+    }
+    window.addEventListener(OPEN_QUOTE_EVENT, openModal)
+    document.addEventListener('click', onClick)
+    return () => {
+      window.removeEventListener(OPEN_QUOTE_EVENT, openModal)
+      document.removeEventListener('click', onClick)
+    }
+  }, [openModal])
 
   // Lock page scroll, close on Escape, and move focus into the dialog
   useEffect(() => {
@@ -158,64 +182,65 @@ export function QuoteModalProvider({ children }: { children: ReactNode }) {
   }, [open, closeModal])
 
   return (
-    <QuoteModalContext.Provider value={openModal}>
+    <>
       {children}
-      {createPortal(
-        <div
-          className={`fixed inset-0 z-[70] flex items-end justify-center transition-opacity duration-300 sm:items-center motion-reduce:transition-none ${
-            open ? 'visible opacity-100' : 'invisible opacity-0'
-          }`}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="quote-modal-title"
-          // Keeps the hidden dialog out of the tab order and the a11y tree
-          // without display:none, which would reset the iframe's height.
-          inert={!open}
-        >
-          {/* Backdrop */}
-          <button
-            type="button"
-            tabIndex={-1}
-            aria-label="Close quote form"
-            onClick={closeModal}
-            className="absolute inset-0 size-full cursor-default bg-ink-950/80 backdrop-blur-sm"
-          />
-
-          {/* Panel — bottom sheet on phones, centered card from sm up */}
+      {isClient &&
+        createPortal(
           <div
-            className={`relative flex max-h-[92dvh] w-full max-w-2xl flex-col rounded-t-2xl bg-cream-50 shadow-2xl transition-transform duration-300 sm:max-h-[90dvh] sm:rounded-2xl motion-reduce:transition-none ${
-              open ? 'translate-y-0' : 'translate-y-4'
+            className={`fixed inset-0 z-[70] flex items-end justify-center transition-opacity duration-300 sm:items-center motion-reduce:transition-none ${
+              open ? 'visible opacity-100' : 'invisible opacity-0'
             }`}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="quote-modal-title"
+            // Keeps the hidden dialog out of the tab order and the a11y tree
+            // without display:none, which would reset the iframe's height.
+            inert={!open}
           >
-            <div className="flex items-start justify-between gap-4 border-b border-ink-500/15 px-5 py-4 sm:px-7 sm:py-5">
-              <div>
-                <p
-                  id="quote-modal-title"
-                  className="font-display text-xl font-bold text-ink-950 uppercase sm:text-2xl"
-                >
-                  Get Your <span className="text-brand-500">Free Quote</span>
-                </p>
-                <div className="accent-rule mt-2" />
-              </div>
-              <button
-                ref={closeRef}
-                type="button"
-                onClick={closeModal}
-                aria-label="Close"
-                className="-mr-1 flex size-10 shrink-0 items-center justify-center rounded-lg text-ink-500 transition-colors hover:bg-ink-500/10 hover:text-ink-950"
-              >
-                <CloseIcon className="size-5" />
-              </button>
-            </div>
+            {/* Backdrop */}
+            <button
+              type="button"
+              tabIndex={-1}
+              aria-label="Close quote form"
+              onClick={closeModal}
+              className="absolute inset-0 size-full cursor-default bg-ink-950/80 backdrop-blur-sm"
+            />
 
-            {/* The embed auto-sizes to the full form height; this scrolls it */}
-            <div className="overflow-y-auto overscroll-contain px-5 py-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] sm:px-7">
-              {mounted && <JobberEmbed />}
+            {/* Panel — bottom sheet on phones, centered card from sm up */}
+            <div
+              className={`relative flex max-h-[92dvh] w-full max-w-2xl flex-col rounded-t-2xl bg-cream-50 shadow-2xl transition-transform duration-300 sm:max-h-[90dvh] sm:rounded-2xl motion-reduce:transition-none ${
+                open ? 'translate-y-0' : 'translate-y-4'
+              }`}
+            >
+              <div className="flex items-start justify-between gap-4 border-b border-ink-500/15 px-5 py-4 sm:px-7 sm:py-5">
+                <div>
+                  <p
+                    id="quote-modal-title"
+                    className="font-display text-xl font-bold text-ink-950 uppercase sm:text-2xl"
+                  >
+                    Get Your <span className="text-brand-500">Free Quote</span>
+                  </p>
+                  <div className="accent-rule mt-2" />
+                </div>
+                <button
+                  ref={closeRef}
+                  type="button"
+                  onClick={closeModal}
+                  aria-label="Close"
+                  className="-mr-1 flex size-10 shrink-0 items-center justify-center rounded-lg text-ink-500 transition-colors hover:bg-ink-500/10 hover:text-ink-950"
+                >
+                  <CloseIcon className="size-5" />
+                </button>
+              </div>
+
+              {/* The embed auto-sizes to the full form height; this scrolls it */}
+              <div className="overflow-y-auto overscroll-contain px-5 py-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] sm:px-7">
+                {mounted && <JobberEmbed />}
+              </div>
             </div>
-          </div>
-        </div>,
-        document.body,
-      )}
-    </QuoteModalContext.Provider>
+          </div>,
+          document.body,
+        )}
+    </>
   )
 }

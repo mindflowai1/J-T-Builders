@@ -4,17 +4,26 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "predev": "node --env-file-if-exists=.env scripts/fetch-posts.mjs --optional",
     "dev": "vite",
-    "prebuild": "tsc -b",
-    "build": "vite build",
+    "prebuild": "node --env-file-if-exists=.env scripts/fetch-posts.mjs && tsc -b",
+    "build": "vite build && vite build --ssr src/blog/render.tsx --outDir dist-ssr && node --env-file-if-exists=.env scripts/build-blog.mjs",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "admin:create": "node --env-file-if-exists=.env scripts/create-admin.mjs",
+    "db:push": "node --env-file-if-exists=.env scripts/db-push.mjs"
   },
   "dependencies": {
     "@fontsource/nunito-sans": "^5.2.7",
-    "@types/node": "^24.13.3",
     "@fontsource/oswald": "^5.2.8",
+    "@supabase/supabase-js": "^2.117.3",
     "@tailwindcss/vite": "^4.3.3",
+    "@tiptap/extension-image": "^3.31.4",
+    "@tiptap/extension-placeholder": "^3.31.4",
+    "@tiptap/pm": "^3.31.4",
+    "@tiptap/react": "^3.31.4",
+    "@tiptap/starter-kit": "^3.31.4",
+    "@types/node": "^24.13.3",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "tailwindcss": "^4.3.3"
@@ -22,8 +31,11 @@
   "devDependencies": {
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
+    "@types/sanitize-html": "^2.16.2",
     "@vitejs/plugin-react": "^6.0.3",
     "oxlint": "^1.71.0",
+    "postgres": "^3.4.9",
+    "sanitize-html": "^2.18.0",
     "sharp": "^0.35.3",
     "typescript": "~6.0.2",
     "vite": "^8.1.1"

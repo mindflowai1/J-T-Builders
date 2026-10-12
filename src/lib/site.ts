@@ -2,6 +2,8 @@
 
 export const SITE = {
   name: 'J&T Builders',
+  /** Canonical origin: canonical URLs, sitemap, Open Graph, JSON-LD */
+  url: 'https://www.jtbuildersct.com',
   legalName: 'J&T Builders LLC',
   phone: '(203) 300-6384',
   phoneHref: 'tel:+12033006384',
@@ -17,10 +19,15 @@ export const SITE = {
     'https://search.google.com/local/writereview?placeid=ChIJRYgpwfkv0YkRIq_dOgbfvG0',
 } as const
 
+/**
+ * Root-relative so they work from the blog too. On the home page the browser
+ * treats "/#services" as an in-page jump, so nothing reloads there.
+ */
 export const NAV_LINKS = [
-  { label: 'Services', href: '#services' },
-  { label: 'Why Us', href: '#why-us' },
-  { label: 'Process', href: '#process' },
-  { label: 'Projects', href: '#projects' },
-  { label: 'Reviews', href: '#reviews' },
+  { label: 'Services', href: '/#services' },
+  { label: 'Why Us', href: '/#why-us' },
+  { label: 'Process', href: '/#process' },
+  { label: 'Projects', href: '/#projects' },
+  { label: 'Reviews', href: '/#reviews' },
+  { label: 'Blog', href: '/blog/' },
 ] as const

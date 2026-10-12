@@ -11,7 +11,7 @@ import { useQuoteModal } from '../lib/useQuoteModal'
 function Logo({ scrolled }: { scrolled: boolean }) {
   return (
     <a
-      href="#top"
+      href="/#top"
       aria-label="J&T Builders, back to top"
       className="shrink-0 self-start"
     >

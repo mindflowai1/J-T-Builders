@@ -12,6 +12,7 @@ import Process from './sections/Process'
 import Gallery from './sections/Gallery'
 import BuildStory from './sections/BuildStory'
 import Testimonials from './sections/Testimonials'
+import FromTheBlog from './sections/FromTheBlog'
 import Contact from './sections/Contact'
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
           <Gallery />
           <BuildStory />
           <Testimonials />
+          <FromTheBlog />
           <Contact />
         </main>
         <Footer />

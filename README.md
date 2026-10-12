@@ -62,6 +62,47 @@ sees. The files are kept for reference but nothing on the site calls them.
 [`docs/email-notification.html`](docs/email-notification.html) is a legacy n8n email
 template, kept for reference only.
 
+## Blog (Supabase + static pages)
+
+Posts live in Supabase; the public blog is **static HTML generated at build time**, so
+every page carries its own title, description, canonical, Open Graph and JSON-LD without
+JavaScript (crawlers and WhatsApp/Facebook previews read them as-is), and the blog keeps
+serving even if Supabase is down.
+
+**Build pipeline** (`npm run build`, same on Vercel):
+
+1. `scripts/fetch-posts.mjs` reads published posts with the anon key into `.blog-cache/`
+   and the newest three into `src/generated/latest-posts.json` (bundled into the home
+   page's "From the Blog"). A failure here fails the build, so Vercel keeps the last good
+   deploy instead of publishing an empty blog.
+2. `vite build` (home, `/admin/`, and the blog's client islands) and
+   `vite build --ssr src/blog/render.tsx`.
+3. `scripts/build-blog.mjs` writes `dist/blog/**/index.html`, `sitemap.xml`,
+   `robots.txt` and `blog/rss.xml`. Post bodies are sanitized here. Analytics are copied
+   from `index.html` between the `tracking:*` markers, so edit them only there.
+
+Blog pages are not hydrated as a whole: only the header and the quote modal/mobile bar
+become interactive (`src/blog/client.tsx`). Quote buttons open the single Jobber modal
+through a window event (`src/lib/useQuoteModal.ts`), since Jobber allows one embed per page.
+
+**Admin** at `/admin/` (noindex): Supabase email/password login, hash routes, rich text
+editor, live preview using the same `PostArticle` component as the public page, Google
+snippet preview. Saving a published post calls `api/blog/publish.ts`, which verifies the
+caller is an admin and triggers the Vercel Deploy Hook; the change is live in ~2 minutes.
+
+**Security** is in the database (`supabase/migrations/`), not the UI: RLS lets anyone
+read published posts, and only users listed in `public.admins` write posts or upload to
+the `blog-images` bucket. The slug of a post that was ever published is locked by a
+trigger, so indexed links never break.
+
+| Command | What it does |
+|---|---|
+| `npm run db:push` | Applies `supabase/migrations/*` (uses `SUPABASE_DB_URL`, no account token) |
+| `npm run admin:create -- name@example.com` | Creates an admin login (password printed once, saved to `.admin-credentials.local`) |
+
+Environment: see `.env.example`. Vercel needs `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`
+and `VERCEL_DEPLOY_HOOK_URL`; `SUPABASE_DB_URL` stays local.
+
 ## Meta tracking (Pixel + Conversions API)
 
 Two channels fire the same event, de-duplicated by a shared `eventId`:
