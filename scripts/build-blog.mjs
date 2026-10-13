@@ -262,8 +262,7 @@ const sitemapEntries = [
   { loc: `${SITE_URL}/`, priority: '1.0' },
   { loc: `${SITE_URL}/blog/`, lastmod: newest, priority: '0.8' },
   ...posts.map((p) => ({ loc: postUrl(p.slug), lastmod: p.updated_at, priority: '0.7' })),
-  { loc: `${SITE_URL}/privacy.html`, priority: '0.2' },
-  { loc: `${SITE_URL}/terms.html`, priority: '0.2' },
+  // privacy.html and terms.html are noindex, so they stay out of the sitemap
 ]
 
 await writeFile(
