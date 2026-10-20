@@ -72,6 +72,14 @@ const readingMinutes = (html) =>
 
 const postUrl = (slug) => `${SITE_URL}/blog/${slug}/`
 
+// Question-and-answer pairs: an h3 ending in "?" followed by a paragraph.
+// Written that way in the editor, they become FAQPage structured data, which
+// answer engines (Google AI Overviews, ChatGPT, Perplexity) quote from.
+const faqPairs = (html) =>
+  [...html.matchAll(/<h3[^>]*>([\s\S]*?)<\/h3>\s*<p[^>]*>([\s\S]*?)<\/p>/g)]
+    .map(([, q, a]) => [plainText(q), plainText(a)])
+    .filter(([q, a]) => q.endsWith('?') && a)
+
 // Rich text from the admin is trusted-ish (only admins write it) but it still
 // becomes public HTML, so it goes through an allowlist. h1 is demoted: the
 // title is the page's only h1.
@@ -79,12 +87,21 @@ const sanitize = (html) =>
   sanitizeHtml(html, {
     allowedTags: [
       'p', 'h2', 'h3', 'h4', 'strong', 'b', 'em', 'i', 'u', 's', 'a', 'ul',
-      'ol', 'li', 'blockquote', 'img', 'hr', 'br', 'code', 'pre',
+      'ol', 'li', 'blockquote', 'img', 'hr', 'br', 'code', 'pre', 'div', 'iframe',
     ],
     allowedAttributes: {
       a: ['href', 'target', 'rel'],
       img: ['src', 'alt', 'title', 'loading', 'decoding'],
+      // YouTube embeds from the editor: <div data-youtube-video><iframe>
+      div: ['data-youtube-video'],
+      iframe: [
+        'src', 'width', 'height', 'title', 'allow', 'allowfullscreen',
+        'loading', 'referrerpolicy',
+      ],
     },
+    // The only iframes that survive are YouTube players
+    allowedIframeHostnames: ['www.youtube-nocookie.com', 'www.youtube.com'],
+    allowIframeRelativeUrls: false,
     allowedSchemes: ['http', 'https', 'mailto', 'tel'],
     transformTags: {
       h1: 'h2',
@@ -101,6 +118,19 @@ const sanitize = (html) =>
       img: (tagName, attribs) => ({
         tagName,
         attribs: { ...attribs, alt: attribs.alt || '', loading: 'lazy', decoding: 'async' },
+      }),
+      // Always the cookie-free player, lazy-loaded, with an accessible name
+      iframe: (tagName, attribs) => ({
+        tagName,
+        attribs: {
+          ...attribs,
+          src: (attribs.src || '').replace('//www.youtube.com/', '//www.youtube-nocookie.com/'),
+          title: attribs.title || 'J&T Builders video',
+          loading: 'lazy',
+          allow: 'accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share',
+          allowfullscreen: 'true',
+          referrerpolicy: 'strict-origin-when-cross-origin',
+        },
       }),
     },
   })
@@ -206,6 +236,7 @@ for (const [i, post] of posts.entries()) {
   const image = post.cover_url || DEFAULT_IMAGE
   // Related: the posts around this one, newest first, never itself
   const related = summaries.filter((_, j) => j !== i).slice(0, 3)
+  const faq = faqPairs(clean.body)
 
   await mkdir(`dist/blog/${post.slug}`, { recursive: true })
   await writeFile(
@@ -238,6 +269,19 @@ for (const [i, post] of posts.entries()) {
           keywords: post.tags.join(', ') || undefined,
           wordCount: plainText(clean.body).split(' ').filter(Boolean).length,
         },
+        ...(faq.length >= 2
+          ? [
+              {
+                '@context': 'https://schema.org',
+                '@type': 'FAQPage',
+                mainEntity: faq.map(([question, answer]) => ({
+                  '@type': 'Question',
+                  name: question,
+                  acceptedAnswer: { '@type': 'Answer', text: answer },
+                })),
+              },
+            ]
+          : []),
         {
           '@context': 'https://schema.org',
           '@type': 'BreadcrumbList',

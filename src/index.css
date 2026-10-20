@@ -223,6 +223,27 @@
     border-radius: 1rem;
     box-shadow: 0 20px 40px -20px rgb(0 0 0 / 0.35);
   }
+  /* YouTube embeds. The editor gives regular videos 640x360 and Shorts
+     360x640, so the attributes tell the two shapes apart. */
+  .prose-blog [data-youtube-video] {
+    margin-top: 2em;
+    margin-bottom: 2em;
+  }
+  .prose-blog iframe {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    margin-inline: auto;
+    border: 0;
+    border-radius: 1rem;
+    background: var(--color-ink-950);
+    box-shadow: 0 20px 40px -20px rgb(0 0 0 / 0.35);
+  }
+  .prose-blog iframe[width='360'][height='640'] {
+    max-width: 360px;
+    aspect-ratio: 9 / 16;
+  }
   .prose-blog hr {
     margin: 2.5em 0;
     border-color: color-mix(in srgb, var(--color-ink-500) 25%, transparent);

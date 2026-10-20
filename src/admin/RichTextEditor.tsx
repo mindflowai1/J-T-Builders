@@ -1,5 +1,6 @@
 import Image from '@tiptap/extension-image'
 import Placeholder from '@tiptap/extension-placeholder'
+import Youtube from '@tiptap/extension-youtube'
 import { EditorContent, useEditor, useEditorState, type Editor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { useState, type ReactNode } from 'react'
@@ -7,12 +8,19 @@ import { pickImage, uploadImage } from './images'
 
 /**
  * Article body editor. The toolbar offers only what the public page styles
- * (src/index.css .prose-blog): subheadings, emphasis, links, lists, quotes and
- * images. The title is the page's h1, so the editor starts at h2.
+ * (src/index.css .prose-blog): subheadings, emphasis, links, lists, quotes,
+ * images and YouTube videos. The title is the page's h1, so the editor starts
+ * at h2.
+ *
+ * Anything the editor has no extension for is dropped when a post is opened,
+ * so every kind of content a post may contain needs one here.
  *
  * The editable area uses the same .prose-blog class as the live page, so what
  * the author sees while typing is what readers will see.
  */
+const VIDEO = { width: 640, height: 360 }
+const SHORT = { width: 360, height: 640 }
+
 export default function RichTextEditor({
   value,
   onChange,
@@ -34,6 +42,16 @@ export default function RichTextEditor({
         },
       }),
       Image,
+      // youtube-nocookie: no YouTube cookies until the visitor presses play.
+      // Sizes are fixed so .prose-blog can tell a vertical Short from a
+      // regular video by its attributes (see src/index.css).
+      Youtube.configure({
+        nocookie: true,
+        modestBranding: true,
+        rel: 0,
+        width: VIDEO.width,
+        height: VIDEO.height,
+      }),
       Placeholder.configure({
         placeholder: 'Start writing… Use "Heading" to break the article into sections.',
       }),
@@ -107,6 +125,17 @@ function Toolbar({ editor }: { editor: Editor }) {
     }
   }
 
+  const addVideo = () => {
+    const url = window.prompt('YouTube link (watch, youtu.be, Shorts or embed URL)')
+    if (!url?.trim()) return
+    const vertical =
+      /\/shorts\//.test(url) ||
+      window.confirm('Is this a vertical video (a YouTube Short)? OK = vertical, Cancel = regular')
+    const size = vertical ? SHORT : VIDEO
+    const ok = editor.chain().focus().setYoutubeVideo({ src: url.trim(), ...size }).run()
+    setError(ok ? '' : 'That doesn’t look like a YouTube link.')
+  }
+
   return (
     <div className="sticky top-0 z-10 border-b border-ink-500/15 bg-cream-50/95 backdrop-blur">
       <div className="flex flex-wrap items-center gap-1 p-2" role="toolbar" aria-label="Formatting">
@@ -154,6 +183,9 @@ function Toolbar({ editor }: { editor: Editor }) {
         </ToolButton>
         <ToolButton label="Insert image" onClick={addImage} disabled={uploading}>
           {uploading ? 'Uploading…' : 'Image'}
+        </ToolButton>
+        <ToolButton label="Insert YouTube video" onClick={addVideo}>
+          ▶ Video
         </ToolButton>
         <Divider />
         <ToolButton label="Undo" onClick={() => editor.chain().focus().undo().run()} disabled={!state.canUndo}>
