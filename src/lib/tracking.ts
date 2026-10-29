@@ -26,6 +26,21 @@ export function trackGoogleConversion() {
 }
 
 /**
+ * Phone leads: one document-level listener covers every `tel:` link (header,
+ * contact, footer, mobile bar, static blog HTML) without wiring each one.
+ * Fires the Google Ads "phone call lead" event and Meta's Contact. No delayed
+ * navigation: a tel: link opens the dialer without unloading the page, so the
+ * events still go out.
+ */
+export function trackPhoneClicks() {
+  document.addEventListener('click', (e) => {
+    if (!(e.target as Element | null)?.closest?.('a[href^="tel:"]')) return
+    window.gtag?.('event', 'ads_conversion_phone_call_lead')
+    trackEvent('Contact')
+  })
+}
+
+/**
  * Funnel, weakest to strongest intent:
  *   ViewContent      clicked a quote CTA (scrolled to the form)
  *   InitiateCheckout started filling the form

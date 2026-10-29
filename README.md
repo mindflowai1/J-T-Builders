@@ -119,7 +119,7 @@ Two channels fire the same event, de-duplicated by a shared `eventId`:
 | `ViewContent` | a quote CTA opens the modal | exact |
 | `InitiateCheckout` | visitor clicks into the form iframe | exact |
 | `Lead` | form appears to be submitted | **heuristic**, see below |
-| `Contact` | mobile call button tapped | exact |
+| `Contact` | any `tel:` link clicked (also fires Google Ads `ads_conversion_phone_call_lead`) | exact |
 
 Optimize ad delivery for `Lead`; use `InitiateCheckout` as a backup audience.
 

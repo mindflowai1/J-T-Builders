@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { SITE } from '../lib/site'
-import { trackEvent } from '../lib/tracking'
 import { PhoneIcon } from './icons'
 import { useQuoteModal } from '../lib/useQuoteModal'
 
@@ -28,7 +27,6 @@ export default function MobileActionBar() {
     >
       <a
         href={SITE.phoneHref}
-        onClick={() => trackEvent('Contact')}
         className="flex flex-1 items-center justify-center gap-2 rounded-lg border-2 border-cream-50/25 px-4 py-3 font-bold text-cream-50 transition-colors active:border-brand-500"
       >
         <PhoneIcon className="size-4" />

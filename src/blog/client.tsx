@@ -8,6 +8,9 @@ import '../index.css'
 import Header from '../components/Header'
 import MobileActionBar from '../components/MobileActionBar'
 import { QuoteModalProvider } from '../components/QuoteModal'
+import { trackPhoneClicks } from '../lib/tracking'
+
+trackPhoneClicks()
 
 const headerRoot = document.getElementById('header-root')
 if (headerRoot) {
