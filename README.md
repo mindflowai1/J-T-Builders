@@ -131,10 +131,15 @@ both derived from Jobber's own embed snippet (`QuoteModal.tsx`):
 1. **Form start (exact).** Clicking into the iframe moves focus out of the page, so
    `window.blur` + `document.activeElement` being our iframe means the visitor started
    filling it in.
-2. **Submit (heuristic).** Jobber's iframe `postMessage`s its content height to the
-   parent (that's how the snippet auto-resizes it). After a successful submit the form
-   is replaced by a short confirmation screen, so the height collapses. We treat
-   "was tall, went short, after engagement" as a submit, firing once per page.
+2. **Submit (heuristic).** Jobber's iframe `postMessage`s its height (`"NNNpx"`) and a
+   `"scrolltop"` on every screen change and after every submit attempt. The form goes
+   fields → review → "Thank you", shrinking each time, so the second shrinking screen
+   change in a row counts as a submit, once per page. Back or a failed submit resets it.
+
+For Google, the exact signal is Jobber's own GA4 tracking (form settings → Add tracking
+→ `G-5MTV7T3EMC`): on success it sends `generate_lead` to GA4, with the visitor's
+`client_id` passed in by the snippet and the `gclid` when present. Import that event into
+Google Ads as the primary lead conversion.
 
 To make `Lead` exact, wire a **Jobber webhook** (`REQUEST_CREATE`) to a serverless
 endpoint that calls `api/meta-event.ts` server-side. That also lets you pass the real

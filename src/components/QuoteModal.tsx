@@ -36,22 +36,26 @@ const CSS_URL =
 const SCRIPT_URL =
   'https://d3ey4dbjkt2f6s.cloudfront.net/assets/static_link/work_request_embed_snippet.js'
 
-/** A full form is tall; the post-submit confirmation screen is short. */
-const FORM_MIN_HEIGHT = 500
-const CONFIRMATION_MAX_HEIGHT = 400
-
 /**
  * Tracking through a cross-origin iframe: we can't read inside it, but Jobber's
  * own snippet leaves two usable signals.
  *   1. Clicking into the iframe steals focus from the page, so window blur +
  *      document.activeElement tells us the visitor started filling the form.
- *   2. The iframe postMessages its content height to the parent. After a
- *      successful submit the form is replaced by a short confirmation screen,
- *      so the height collapses. That drop is our submit signal.
+ *   2. The iframe postMessages only three things (read from Jobber's Client Hub
+ *      code): its height as "NNNpx", "scrolltop" and "close". "scrolltop" is
+ *      sent on every screen change (Next, Back) and after every submit attempt,
+ *      followed by the new screen's height.
  *
- * (2) is a heuristic. The exact signal would be a Jobber webhook on request
- * creation calling api/meta-event.ts server-side; see README.
+ * The form is two screens (fields, then a review), so a submit is the second
+ * screen change in a row that shrinks the iframe: fields 960px -> review 588px
+ * -> "Thank you" 467px on desktop. Back to the fields, or a failed submit that
+ * adds an error, grows it and resets the count. Relative, so it holds at any
+ * screen width (a fixed "under 400px" cutoff missed the 467px confirmation).
+ *
+ * Google's own exact signal is the generate_lead event Jobber sends to GA4 on
+ * success (form tracking set in Jobber); this one feeds Meta's Lead.
  */
+const SHRINKS_TO_SUBMIT = 2
 function JobberEmbed() {
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -81,7 +85,9 @@ function JobberEmbed() {
 
     let engaged = false
     let submitted = false
-    let tallestHeight = 0
+    let height = 0
+    let heightBeforeChange: number | null = null
+    let shrinks = 0
 
     const onBlur = () => {
       if (engaged) return
@@ -96,20 +102,26 @@ function JobberEmbed() {
       if (!event.origin.endsWith('getjobber.com')) return
       if (typeof event.data !== 'string') return
 
-      const height = parseInt(event.data, 10)
-      if (Number.isNaN(height) || height <= 0) return
+      if (event.data === 'scrolltop') {
+        heightBeforeChange = height
+        return
+      }
 
-      if (
-        engaged &&
-        !submitted &&
-        tallestHeight >= FORM_MIN_HEIGHT &&
-        height <= CONFIRMATION_MAX_HEIGHT
-      ) {
+      const next = parseInt(event.data, 10)
+      if (Number.isNaN(next) || next <= 0) return
+      height = next
+
+      // Only the first height after a screen change counts; later ones are
+      // the same screen resizing (typing, validation messages).
+      if (heightBeforeChange === null) return
+      shrinks = next < heightBeforeChange ? shrinks + 1 : 0
+      heightBeforeChange = null
+
+      if (!submitted && shrinks >= SHRINKS_TO_SUBMIT) {
         submitted = true
         trackEvent('Lead')
         trackGoogleConversion()
       }
-      tallestHeight = Math.max(tallestHeight, height)
     }
 
     window.addEventListener('blur', onBlur)
