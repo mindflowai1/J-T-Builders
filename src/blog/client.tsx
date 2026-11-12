@@ -7,10 +7,16 @@ import { createRoot, hydrateRoot } from 'react-dom/client'
 import '../index.css'
 import Header from '../components/Header'
 import MobileActionBar from '../components/MobileActionBar'
-import { QuoteModalProvider } from '../components/QuoteModal'
-import { trackPhoneClicks } from '../lib/tracking'
+import { trackEvent, trackPhoneClicks } from '../lib/tracking'
 
 trackPhoneClicks()
+
+// The static quote links (/#quote-form) count like the home page's CTAs
+document.addEventListener('click', (e) => {
+  if ((e.target as Element | null)?.closest?.('a[href="/#quote-form"]')) {
+    trackEvent('ViewContent')
+  }
+})
 
 const headerRoot = document.getElementById('header-root')
 if (headerRoot) {
@@ -26,9 +32,7 @@ const islandsRoot = document.getElementById('islands-root')
 if (islandsRoot) {
   createRoot(islandsRoot).render(
     <StrictMode>
-      <QuoteModalProvider>
-        <MobileActionBar />
-      </QuoteModalProvider>
+      <MobileActionBar />
     </StrictMode>,
   )
 }

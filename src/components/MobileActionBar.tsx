@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react'
 import { SITE } from '../lib/site'
 import { PhoneIcon } from './icons'
-import { useQuoteModal } from '../lib/useQuoteModal'
+import { openQuote } from '../lib/openQuote'
 
 /**
  * Mobile-only sticky bottom bar — thumb-reach Call / Quote actions.
  * Slides up once the user scrolls past the hero.
  */
 export default function MobileActionBar() {
-  const openQuote = useQuoteModal()
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {

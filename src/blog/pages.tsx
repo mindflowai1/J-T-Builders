@@ -6,12 +6,12 @@ import type { Post, PostSummary } from './posts'
 
 /**
  * Static blog pages. Rendered to HTML at build time (scripts/build-blog.mjs)
- * and never hydrated: only the header and the quote modal become interactive,
+ * and never hydrated: only the header and the mobile bar become interactive,
  * as separate islands (src/blog/client.tsx). So no state or effects here, and
  * no <Reveal> — its hidden starting state would stay hidden forever.
  *
- * Quote buttons are <a data-open-quote href="/#contact">: with JavaScript they
- * open the Jobber modal, without it they still lead to the contact section.
+ * Quote buttons are plain links to the home page's quote form (/#quote-form),
+ * so they work without JavaScript.
  */
 
 function QuoteCta() {
@@ -40,8 +40,7 @@ function QuoteCta() {
         </div>
         <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
           <a
-            href="/#contact"
-            data-open-quote
+            href="/#quote-form"
             className="rounded-lg bg-brand-500 px-8 py-3.5 text-center font-bold text-ink-950 transition-colors hover:bg-brand-400 active:bg-brand-600"
           >
             Get Your Free Quote

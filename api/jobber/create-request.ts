@@ -10,11 +10,17 @@
  *   JOBBER_CLIENT_ID, JOBBER_CLIENT_SECRET  (from the Developer Center app)
  *   JOBBER_REFRESH_TOKEN                     (from the one-time OAuth connect)
  * Refresh token rotation must be OFF on the app, so this token stays valid.
+ * Regenerating the client secret revokes it: update JOBBER_CLIENT_SECRET, then
+ * visit /api/jobber/connect again for a new refresh token.
+ *
+ * GET on this endpoint checks those credentials without creating anything.
  */
 
 const TOKEN_URL = 'https://api.getjobber.com/api/oauth/token'
 const GRAPHQL_URL = 'https://api.getjobber.com/api/graphql'
-const GRAPHQL_VERSION = process.env.JOBBER_GRAPHQL_VERSION || '2025-04-16'
+// Versions stay reachable for up to 18 months; 2025-04-16 had run out. Nothing
+// in the changelog since touches clientCreate, requestCreate or notes.
+const GRAPHQL_VERSION = process.env.JOBBER_GRAPHQL_VERSION || '2026-09-25'
 
 const SERVICES = [
   'Decks, Pergolas & Sun Rooms',
@@ -43,7 +49,11 @@ async function getAccessToken(): Promise<string> {
       client_secret: process.env.JOBBER_CLIENT_SECRET,
     }),
   })
-  if (!res.ok) throw new Error(`Token refresh failed: ${res.status}`)
+  // Jobber's error text ("The provided refresh token is not valid", ...) says
+  // whether to reconnect or fix the secret; it never contains the token.
+  if (!res.ok) {
+    throw new Error(`Token refresh failed: ${res.status} ${await res.text()}`)
+  }
   const data = (await res.json()) as { access_token?: string }
   if (!data.access_token) throw new Error('No access token returned')
   return data.access_token
@@ -138,12 +148,36 @@ async function findExistingClientId(
   return undefined
 }
 
+function isConfigured(): boolean {
+  return Boolean(
+    process.env.JOBBER_CLIENT_ID &&
+      process.env.JOBBER_CLIENT_SECRET &&
+      process.env.JOBBER_REFRESH_TOKEN,
+  )
+}
+
+/**
+ * Credential check: refreshes the token and reads the account name. Open it
+ * after changing any JOBBER_* variable, before trusting the form with leads.
+ */
+export async function GET(): Promise<Response> {
+  if (!isConfigured()) {
+    return Response.json({ ok: false, error: 'Jobber is not configured' })
+  }
+  try {
+    const token = await getAccessToken()
+    const res = await jobberGraphQL(token, 'query { account { name } }', {})
+    const account = (res.data?.account as { name?: string } | undefined)?.name
+    if (!account) return Response.json({ ok: false, error: res.errors ?? 'No account' })
+    return Response.json({ ok: true, account, version: GRAPHQL_VERSION })
+  } catch (err) {
+    return Response.json({ ok: false, error: String(err) })
+  }
+}
+
 export async function POST(request: Request): Promise<Response> {
-  if (
-    !process.env.JOBBER_CLIENT_ID ||
-    !process.env.JOBBER_CLIENT_SECRET ||
-    !process.env.JOBBER_REFRESH_TOKEN
-  ) {
+  if (!isConfigured()) {
+    console.error('create-request: JOBBER_* environment variables missing')
     return Response.json({ error: 'Jobber is not configured' }, { status: 500 })
   }
 

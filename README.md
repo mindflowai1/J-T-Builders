@@ -36,29 +36,28 @@ Vercel auto-detects the Vite preset, no extra configuration needed:
 - [`docs/design-plan.md`](docs/design-plan.md): design system + page architecture
 - [`docs/design-notes.md`](docs/design-notes.md): reference-site analysis
 
-## Lead capture (all Jobber, no middleware)
+## Lead capture (own form → Jobber API)
 
-The quote form is the official Jobber work-request embed, shown in a modal
-(`src/components/QuoteModal.tsx`). Leads land directly in the client's Jobber account —
-no API call, no OAuth, no credentials to keep alive on our side. Fields and colors are
-managed in Jobber (form builder, form id `4882418`, and Client Hub branding), not in this
-codebase.
+The quote form is the site's own (`src/components/QuoteForm.tsx`), in three steps (service,
+project, contact). It sits in the hero (`#quote-form`) and in the contact section; every
+"Get Your Free Quote" CTA scrolls to the hero one via `src/lib/openQuote.ts` (from blog
+pages, a link to `/#quote-form`). It posts to `api/jobber/create-request.ts`, which creates the
+client (or reuses an existing one), the request, and a note with the description over
+Jobber's GraphQL API (version pinned in the file).
 
-The snippet only supports one embed instance per page, and the form only renders correctly
-through the official snippet, since the form page depends on the snippet's resizer. So a
-single embed lives inside one modal that every "Get Your Free Quote" CTA opens (header,
-mobile menu, mobile action bar, hero card, contact card) via the `useQuoteModal` hook in
-`src/lib/useQuoteModal.ts`.
+Credentials: `JOBBER_CLIENT_ID`, `JOBBER_CLIENT_SECRET`, `JOBBER_REFRESH_TOKEN` on Vercel.
+Refresh token rotation is **off** on the Developer Center app, so the refresh token stays
+valid until the app is disconnected or its client secret is regenerated. After either:
 
-The embed mounts on the **first** open, so the iframe measures itself while visible, and
-then stays mounted. Closing hides the modal with `invisible` rather than `display:none`,
-which preserves the iframe's measured height so reopening is instant and correctly sized.
+1. Put the current client secret in `JOBBER_CLIENT_SECRET` and redeploy.
+2. Open `/api/jobber/connect`, authorize, copy the refresh token into
+   `JOBBER_REFRESH_TOKEN`, redeploy.
+3. Open `/api/jobber/create-request` (GET): `{"ok":true,"account":...}` means leads will go
+   through. It creates nothing.
 
-`api/jobber/*` is the previous approach — a custom form posting to a serverless endpoint
-that created the client and request over Jobber's GraphQL API. It was abandoned because
-the OAuth credentials are fragile: regenerating the app's client secret in the Developer
-Center silently revokes every refresh token, and leads then fail with a 500 that nobody
-sees. The files are kept for reference but nothing on the site calls them.
+If a submit fails, the form says so and shows the phone number; the cause is in the
+Vercel function logs (`create-request`).
+
 [`docs/email-notification.html`](docs/email-notification.html) is a legacy n8n email
 template, kept for reference only.
 
@@ -81,9 +80,9 @@ serving even if Supabase is down.
    `robots.txt` and `blog/rss.xml`. Post bodies are sanitized here. Analytics are copied
    from `index.html` between the `tracking:*` markers, so edit them only there.
 
-Blog pages are not hydrated as a whole: only the header and the quote modal/mobile bar
-become interactive (`src/blog/client.tsx`). Quote buttons open the single Jobber modal
-through a window event (`src/lib/useQuoteModal.ts`), since Jobber allows one embed per page.
+Blog pages are not hydrated as a whole: only the header and the mobile bar
+become interactive (`src/blog/client.tsx`). Quote buttons link to the home page's form
+(`/#quote-form`).
 
 **Admin** at `/admin/` (noindex): Supabase email/password login, hash routes, rich text
 editor, live preview using the same `PostArticle` component as the public page, Google
@@ -116,35 +115,18 @@ Two channels fire the same event, de-duplicated by a shared `eventId`:
 | Event | Fires when | Reliability |
 |-------|-----------|-------------|
 | `PageView` | any page load | exact |
-| `ViewContent` | a quote CTA opens the modal | exact |
-| `InitiateCheckout` | visitor clicks into the form iframe | exact |
-| `Lead` | form appears to be submitted | **heuristic**, see below |
+| `ViewContent` | a quote CTA is clicked (scrolls to the form) | exact |
+| `InitiateCheckout` | visitor focuses a form field | exact |
+| `Lead` | server confirms the request was created in Jobber | exact |
 | `Contact` | any `tel:` link clicked (also fires Google Ads `ads_conversion_phone_call_lead`) | exact |
 
 Optimize ad delivery for `Lead`; use `InitiateCheckout` as a backup audience.
 
-### Tracking through the Jobber iframe
+### Lead tracking
 
-The form is cross-origin, so its DOM is unreadable. Two signals are still available,
-both derived from Jobber's own embed snippet (`QuoteModal.tsx`):
-
-1. **Form start (exact).** Clicking into the iframe moves focus out of the page, so
-   `window.blur` + `document.activeElement` being our iframe means the visitor started
-   filling it in.
-2. **Submit (heuristic).** Jobber's iframe `postMessage`s its height (`"NNNpx"`) and a
-   `"scrolltop"` on every screen change and after every submit attempt. The form goes
-   fields → review → "Thank you", shrinking each time, so the second shrinking screen
-   change in a row counts as a submit, once per page. Back or a failed submit resets it.
-
-For Google, the exact signal is Jobber's own GA4 tracking (form settings → Add tracking
-→ `G-5MTV7T3EMC`): on success it sends `generate_lead` to GA4, with the visitor's
-`client_id` passed in by the snippet and the `gclid` when present. Import that event into
-Google Ads as the primary lead conversion.
-
-To make `Lead` exact, wire a **Jobber webhook** (`REQUEST_CREATE`) to a serverless
-endpoint that calls `api/meta-event.ts` server-side. That also lets you pass the real
-email/phone, which materially improves Meta's match quality. Requires a Jobber Developer
-app with webhook scopes on the client's account.
+`Lead` (Pixel + Conversions API, with the email/phone for match quality), the Google Ads
+conversion and GA4's `generate_lead` fire only after `create-request` answers OK, so each
+one is a request that really reached Jobber.
 
 **Environment variables** (Vercel > Settings > Environment Variables, all environments):
 

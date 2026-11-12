@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import logo from '../assets/logo.webp'
 import { NAV_LINKS, SITE } from '../lib/site'
 import { CloseIcon, MenuIcon, PhoneIcon } from './icons'
-import { useQuoteModal } from '../lib/useQuoteModal'
+import { openQuote } from '../lib/openQuote'
 
 /**
  * Badge treatment: at the top of the page the shield hangs large below the
@@ -27,7 +27,6 @@ function Logo({ scrolled }: { scrolled: boolean }) {
 }
 
 export default function Header() {
-  const openQuote = useQuoteModal()
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
 

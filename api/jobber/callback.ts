@@ -7,6 +7,14 @@
  */
 const TOKEN_URL = 'https://api.getjobber.com/api/oauth/token'
 
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+}
+
 function page(title: string, bodyHtml: string): Response {
   return new Response(
     `<!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -27,7 +35,9 @@ export async function GET(request: Request): Promise<Response> {
   const code = url.searchParams.get('code')
   const error = url.searchParams.get('error')
 
-  if (error) return page('Error', `<h1>Authorization failed</h1><p>${error}</p>`)
+  // Escaped: it comes straight from the query string, and this page shares the
+  // site's origin with /admin.
+  if (error) return page('Error', `<h1>Authorization failed</h1><p>${escapeHtml(error)}</p>`)
   if (!code) return page('Error', `<h1>Missing code</h1><p>No authorization code.</p>`)
 
   const clientId = process.env.JOBBER_CLIENT_ID

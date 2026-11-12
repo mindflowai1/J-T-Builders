@@ -16,13 +16,17 @@ declare global {
 
 /** Google Ads conversion action for "Submit lead form" (tag lives in index.html) */
 const GOOGLE_CONVERSION = 'AW-17629581967/QjapCJH86fUbEI-luNZB'
+const GA4_ID = 'G-5MTV7T3EMC'
 
 /**
- * Google Ads conversion. Fired on confirmed form submit instead of from a
- * thank-you page: no page to land on directly, so no inflated conversions.
+ * Google lead signals, fired only once the server confirms the request reached
+ * Jobber: the Ads conversion, plus GA4's generate_lead (same name Jobber's own
+ * form tracking used, so the GA4 key event keeps working). No thank-you page to
+ * land on directly, so no inflated conversions.
  */
 export function trackGoogleConversion() {
   window.gtag?.('event', 'conversion', { send_to: GOOGLE_CONVERSION })
+  window.gtag?.('event', 'generate_lead', { send_to: GA4_ID })
 }
 
 /**

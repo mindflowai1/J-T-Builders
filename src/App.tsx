@@ -1,7 +1,6 @@
 import Header from './components/Header'
 import Footer from './components/Footer'
 import MobileActionBar from './components/MobileActionBar'
-import { QuoteModalProvider } from './components/QuoteModal'
 import Hero from './sections/Hero'
 import SocialProofBar from './sections/SocialProofBar'
 import Services from './sections/Services'
@@ -17,27 +16,25 @@ import Contact from './sections/Contact'
 
 function App() {
   return (
-    <QuoteModalProvider>
-      <div id="top">
-        <Header />
-        <main>
-          <Hero />
-          <SocialProofBar />
-          <Services />
-          <StatsBand />
-          <PartnerSpotlight />
-          <WhyChooseUs />
-          <Process />
-          <Gallery />
-          <BuildStory />
-          <Testimonials />
-          <FromTheBlog />
-          <Contact />
-        </main>
-        <Footer />
-        <MobileActionBar />
-      </div>
-    </QuoteModalProvider>
+    <div id="top">
+      <Header />
+      <main>
+        <Hero />
+        <SocialProofBar />
+        <Services />
+        <StatsBand />
+        <PartnerSpotlight />
+        <WhyChooseUs />
+        <Process />
+        <Gallery />
+        <BuildStory />
+        <Testimonials />
+        <FromTheBlog />
+        <Contact />
+      </main>
+      <Footer />
+      <MobileActionBar />
+    </div>
   )
 }
 
