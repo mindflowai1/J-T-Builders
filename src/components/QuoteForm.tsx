@@ -125,7 +125,7 @@ export default function QuoteForm({
     const data = new FormData(e.currentTarget)
 
     // Honeypot: real visitors never see or fill this field
-    if (data.get('company')) {
+    if (data.get('jt_hp')) {
       setStatus('sent')
       return
     }
@@ -184,10 +184,13 @@ export default function QuoteForm({
 
   return (
     <form noValidate onSubmit={handleSubmit} onFocus={handleFocus}>
-      {/* Honeypot — visually hidden and unreachable by keyboard/screen readers */}
+      {/* Honeypot — visually hidden and unreachable by keyboard/screen readers.
+          The name must mean nothing to browser autofill: as "company", Chrome
+          filled it with the visitor's saved organization and real leads were
+          silently dropped (success screen shown, nothing sent). */}
       <input
         type="text"
-        name="company"
+        name="jt_hp"
         tabIndex={-1}
         autoComplete="off"
         aria-hidden="true"

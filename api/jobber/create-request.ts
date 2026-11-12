@@ -181,7 +181,7 @@ export async function POST(request: Request): Promise<Response> {
     return Response.json({ error: 'Jobber is not configured' }, { status: 500 })
   }
 
-  let body: Partial<Lead> & { company?: string }
+  let body: Partial<Lead> & { jt_hp?: string }
   try {
     body = await request.json()
   } catch {
@@ -189,7 +189,7 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   // Honeypot: real visitors never fill this hidden field
-  if (body.company) return Response.json({ ok: true })
+  if (body.jt_hp) return Response.json({ ok: true })
 
   const name = (body.name || '').trim()
   const phone = (body.phone || '').trim()
